@@ -1,0 +1,41 @@
+/**
+ * Mapado admin Sheets
+ */
+
+.mapado-settings-page h1 {
+	margin: 40px 0;
+}
+
+.mapado_table {
+	width: 800px;
+	margin: 30px 0;
+}
+
+.mapado_table label {
+	font-weight: bold;
+}
+
+.mapado_table td {
+	vertical-align: middle;
+}
+#mapado_settings_table td.label {
+	width: 60px;
+}
+
+.mapado_table .button-delete {
+	background-color: rgb(247, 92, 92);
+	color: #FFF;
+	border-color: rgb(186, 41, 41);
+
+	-webkit-box-shadow: inset 0 1px 0 rgb(255, 145, 145), 0 1px 0 rgba(0, 0, 0, .08);
+	-moz-box-shadow: inset 0 1px 0 rgb(255, 145, 145), 0 1px 0 rgba(0, 0, 0, .08);
+	-ms-box-shadow: inset 0 1px 0 rgb(255, 145, 145), 0 1px 0 rgba(0, 0, 0, .08);
+	-o-box-shadow: inset 0 1px 0 rgb(255, 145, 145), 0 1px 0 rgba(0, 0, 0, .08);
+	box-shadow: inset 0 1px 0 rgb(255, 145, 145), 0 1px 0 rgba(0, 0, 0, .08);
+}
+
+.mapado-notifications,
+#mapado-userlists-notifications {
+	width: 400px;
+	margin-left: 0 !important;
+}

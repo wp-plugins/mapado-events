@@ -1,0 +1,170 @@
+/**
+ * Mapado plugin stylesheets
+ */
+
+
+/**
+ * Reset
+ */
+#mapado_list {
+	box-sizing: border-box;
+}
+
+#mapado_list * {
+	box-sizing: inherit;
+}
+
+#mapado-plugin p {
+	margin: 10px 0 0;
+}
+
+
+/**
+ * Card
+ */
+#mapado-plugin .mpd-card {
+	clear: left;
+	min-height: 250px;
+	overflow: hidden; /* Create a BFC to prevent float wrapping */
+	margin: 15px 0 0;
+	background-color: #F7F7F7;
+	background-color: rgba(0, 0, 0, 0.03);
+}
+
+#mapado-plugin .mpd-card__thumb {
+	float: left;
+	height: 250px;
+	max-width: none;
+}
+
+#mapado-plugin .mpd-card__body {
+	overflow: hidden; /* Create a BFC to prevent float wrapping */
+	padding: 20px 35px;
+	font-size: 12px;
+}
+
+@media (max-width: 540px) {
+	#mapado-plugin .mpd-card__thumb {
+		display: block;
+		float: none;
+		margin: 0 auto;
+	}
+
+	#mapado-plugin .mpd-card__body {
+		padding: 10px 20px;
+	}
+}
+
+#mapado-plugin .mpd-card__title {
+	margin: 0;
+}
+
+#mapado-plugin .mpd-card__title > a {
+	text-decoration: none;
+}
+
+#mapado-plugin .mpd-card__address {
+	margin-top: 0;
+}
+
+#mapado-plugin .mpd-card__read-more-link {
+	white-space: nowrap;
+}
+
+
+/**
+ * Card List
+ */
+#mapado-plugin .mpd-card-list__item {
+	margin: 15px 0 0;
+}
+
+#mapado-plugin .mpd-card-list__item:first-child {
+	margin-top: 0;
+}
+
+#mapado-plugin .mpd-card-list__footer {
+	overflow: hidden;
+}
+
+
+/**
+ * Pagination
+ */
+#mapado-plugin .mpd-pagination {
+	float: left;
+	margin: 15px 0;
+}
+
+#mapado-plugin .mpd-pagination__item {
+	display: inline-block;
+	vertical-align: top;
+	width: 40px;
+	height: 40px;
+	line-height: 40px;
+
+	background-color: #F7F7F7;
+	background-color: rgba(0, 0, 0, 0.03);
+	text-align: center;
+	text-decoration: none;
+	border: 0;
+}
+
+#mapado-plugin .mpd-pagination__item--current {
+	background-color: #FDFDFD;
+	color: #CCC;
+}
+
+
+/**
+ * Credits
+ */
+#mapado-plugin .mpd-credits {
+	float: right;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 15px;
+	margin: 15px 0;
+
+	background-color: #F7F7F7;
+	background-color: rgba(0, 0, 0, 0.03);
+	font-size: 12px;
+	text-align: center;
+}
+
+
+/**
+ * Single activity
+ */
+.mapado_activity_single {
+	width: 100%;
+}
+
+.mapado_activity_single .mapado_activity_thumb,
+.mapado_activity_single .mapado_activity_thumb img {
+	width: 100%;
+}
+
+.mapado_activity_single .mapado_activity_infos {
+	padding: 3% 5%;
+	background-color: #F7F7F7;
+	background-color: rgba(0, 0, 0, 0.03);
+}
+.mapado_activity_single .mapado_activity_infos > div {
+	margin: 2% 0;
+}
+.mapado_activity_single .mapado_activity_infos > div > label,
+.mapado_activity_single .mapado_activity_infos > div > div {
+	display: inline-block;
+	vertical-align: top;
+	width: 78%;
+}
+.mapado_activity_single .mapado_activity_infos > div > label {
+	width: 20%;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.mapado_activity_single .mapado_activity_desc {
+	margin-top: 1.5em;
+}
