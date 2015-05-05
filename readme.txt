@@ -39,7 +39,7 @@ This section describes how to install the plugin and get it working.
 
 = Where do i get my API key =
 
-Create a Mapado account and get it on your [http://www.mapado.com/my/applications/](profile/my applications page)
+Create a Mapado account and get it on your [profile/my applications page](http://www.mapado.com/my/applications/)
 
 == Changelog ==
 
