@@ -2,10 +2,10 @@
 /**
  * Plugin Name: Mapado for Wordpress
  * Plugin URI: http://www.mapado.com/
- * Description: Plugin officiel Mapado. Récupérez et affichez vos listes favorites d'événements directement sur votre blog.
- * Version: 0.2
- * Author: Julien Cheyrezy
- * Author URI:  http://www.thewebyouneed.net/
+ * Description: Official Mapado plugin for Wordpress. Display lists of events curated on Mapado into your Wordpress blog.
+ * Version: 0.2.1
+ * Author: Mapado
+ * Author URI:  http://www.mapado.com/
  * License: GPL2 license
  */
 
