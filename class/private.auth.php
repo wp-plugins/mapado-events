@@ -192,8 +192,11 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			else
 				$this->imported_lists[$_POST['uuid']]	= $_POST['slug'];
 		}
-		/* Delete a list */
+		/* Delete a list & the associate page */
 		else if ( $_POST['mapado_action'] == 'delete' ) {
+			$page	= get_page_by_path( $_POST['slug'] );
+			wp_delete_post( $page->ID, true );
+
 			unset( $this->imported_lists[$_POST['uuid']] );
 		}
 

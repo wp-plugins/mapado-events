@@ -6,6 +6,11 @@
 (function($) {
 
 $(document).ready(function() {
+	/* Slug in lower case */
+	$('#mapado_user_lists').on( 'change', '.list-slug', function() {
+		$(this).val( $(this).val().toLowerCase() );
+	});
+
 	/* Import list action */
 	$('#mapado_user_lists').on('click', '.list .button', function(e) {
 		var $button	= $(this);

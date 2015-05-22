@@ -75,7 +75,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 				return 'Accès non autorisé, vérifiez vos identifiants Mapado.';
 
 			/* Pagination */
-			$perpage	= 3;
+			$perpage	= 10;
 			$page		= 1;
 
 			if ( !empty($wp_query->query_vars['paged']) )
