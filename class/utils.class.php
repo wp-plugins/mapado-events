@@ -52,4 +52,20 @@ Class MapadoUtils {
 
 		return $url;
 	}
+
+	/**
+	 * Get event place URL or event URL if not
+	 * @param array event links
+	 * @return string url
+	 */
+	static function getPlaceUrl ( $links  ) {
+		$url	= '';
+
+		if ( !empty($links['mapado_place_url']) )
+			$url	= $links['mapado_place_url']['href'];
+		else if ( !empty($links['mapado_url']) )
+			$url	= $links['mapado_url']['href'];
+
+		return $url;
+	}
 }

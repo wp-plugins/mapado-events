@@ -8,49 +8,12 @@
 <!-- List -->
 <div id="mapado-plugin" class="mpd-card-list">
 	
-	<?php foreach ( $vars['events'] as $activity ) : ?>
-		<div class="mpd-car-list__item mpd-card">
-			<?php if ( !empty($activity->getImageUrlList()['200x250'][0]) ) : ?>
-				<img class="mpd-card__thumb"
-					 src="<?php echo $activity->getImageUrlList()['200x250'][0] ?>"
-					 alt="<?php echo $activity->getTitle() ?>"
-					/>
-			<?php endif; ?>
-
-			<div class="mpd-card__body">
-				<?php if ( $activity->getTitle() ) : ?>
-					<h3 class="mpd-card__title">
-						<a href="<?php echo MapadoUtils::getEventUrl( $activity->getUuid(), $vars['list_slug'] ) ?>">
-							<?php echo $activity->getTitle() ?>
-						</a>
-					</h3>
-				<?php endif; ?>
-	
-				<?php if ( $activity->getShortDate() ) : ?>
-					<p class="mpd-card__date">
-						<?php echo $activity->getShortDate() ?>
-					</p>
-				<?php endif; ?>
-	
-				<?php if ( $activity->getFrontPlaceName() ) : ?>
-					<p class="mpd-card__address">
-						<a href="<?php echo $activity->getLinks()['mapado_place_url']['href'] ?>" target="_blank">
-							<?php echo $activity->getFrontPlaceName() ?>
-						</a>
-					</p>
-				<?php endif; ?>
-	
-				<?php if ( $activity->getShortDescription() ) : ?>
-					<p class="mpd-card__description">
-						<?php echo $activity->getShortDescription() ?>
-						<a href="<?php echo MapadoUtils::getEventUrl( $activity->getUuid(), $vars['list_slug'] ) ?>"
-						   class="mpd-card__read-more-link"
-						>→ Lire la suite</a>
-					</p>
-				<?php endif; ?>
-			</div>
-		</div>
-	<?php endforeach; ?>
+	<?php 
+	foreach ( $vars['events'] as $activity ) {
+		$vars['activity'] = $activity;
+		MapadoUtils::template( 'event_card', $vars);
+	}
+	?>
 
 	<div class="mpd-card-list__footer">
 	
