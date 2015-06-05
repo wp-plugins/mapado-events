@@ -7,6 +7,8 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 	private $token;
 
+	private $event_displayed	= false;
+
 	/* To do the API call once on event single page */
 	protected $current_event;
 
@@ -16,13 +18,15 @@ Class MapadoPublicAuth extends MapadoPlugin {
 		$this->setDatas();
 		$this->setToken();
 
-		add_action( 'the_content', array(&$this, 'eventsPage'), 14 );
 		add_action( 'the_title', array(&$this, 'eventsPageTitle'), 14 );
 		add_action( 'the_content', array(&$this, 'eventPage'), 15 );
 		add_action( 'the_title', array(&$this, 'eventPageTitle'), 15 );
 		add_filter( 'wp_title', array(&$this, 'eventWpTitle'), 10, 15 );
 
 		add_action( 'wp_enqueue_scripts', array(&$this, 'enqueuePublicStyle'), 15 );
+
+		/* Lists display */
+		add_shortcode( 'mapado_list', array(&$this, 'eventsPage')  );
 	}
 
 
@@ -59,31 +63,35 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	 */
 	public function enqueuePublicStyle () {
 		wp_enqueue_style( 'mapado-plugin', MAPADO_PLUGIN_URL . 'assets/mapado_plugin.css', false, '0.1.6' );
+		wp_enqueue_style( 'mapado-card', MAPADO_PLUGIN_URL . 'assets/mapado_card.css', false, '0.1.6' );
 	}
 
 	/**
-	 * Show event informations in post content
-	 * @param original content
-	 * @return filtered content
+	 * Show list of events
+	 * @param shortcode attributes
+	 * @return list html
 	 */
-	public function eventsPage ( $content ) {
+	public function eventsPage ( $atts ) {
 		global $wp_query, $post;
 
-		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) ) {
+		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && empty($wp_query->query_vars['mapado_event']) ) {
 			/* Check token validity */
 			if ( !$client = $this->getClient($this->token) )
 				return 'Accès non autorisé, vérifiez vos identifiants Mapado.';
 
 			/* Pagination */
-			$perpage	= 10;
+			$perpage	= $this->settings['perpage'];
 			$page		= 1;
+
+			/* Default value 'per page' */
+			if ( empty($perpage) )
+				$perpage	= 10;
 
 			if ( !empty($wp_query->query_vars['paged']) )
 				$page	= $wp_query->query_vars['paged'];
 
 			$start		= ($page * $perpage) - $perpage;
-			$end		= $page * $perpage - 1;
-			$params		= array( 'image_sizes' => array('200x250'), 'offset' => $start, 'limit' => $perpage );
+			$params		= array( 'image_sizes' => array('100x150', '150x225', '200x300', '150x100', '225x150', '300x200', '150x150', '225x225', '300x300', '500x120', '500x200', '500x280'), 'offset' => $start, 'limit' => $perpage );
 			$results	= $client->activity->program( $uuid, $params );
 
 			$pagination	= array(
@@ -92,21 +100,25 @@ Class MapadoPublicAuth extends MapadoPlugin {
 				'nb_pages'	=> ceil( $results->getTotalHits() / $perpage )
 			);
 
+			/* Card design */
+			$card_thumb_design = $this->getCardThumbDesign();
+			
 			ob_start();
 
 			MapadoUtils::template( 'events_list', array(
 				'uuid'			=> $uuid,
 				'list_slug'		=> $post->post_name,
 				'events'		=> $results,
-				'pagination'	=> $pagination
+				'pagination'	=> $pagination,
+				'card_thumb_design'	=> $card_thumb_design
 			));
 
-			$content	 = ob_get_contents();
+			$html	 = ob_get_contents();
 
 			ob_end_clean();
-		}
 
-		return $content;
+			return $html;
+		}
 	}
 
 	/**
@@ -117,7 +129,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventsPageTitle ( $title ) {
 		global $post, $wp_query;
 
-		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) ) {
+		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && empty($wp_query->query_vars['mapado_event']) ) {
 			/* Retrieve list uuid with slug */
 			foreach ( $this->imported_lists as $uuid => $slug ) {
 				if ( $slug == $post->post_name )
@@ -127,7 +139,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 			$activity	= $this->getActivity( $uuid, $this->token );
 
 			if ( !empty($activity) )
-				$title		= $activity->getTitle();
+				$title	= $activity->getTitle();
 		}
 
 		return $title;
@@ -141,9 +153,9 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventWpTitle ( $title, $sep ) {
 		global $post, $wp_query;
 
-		if ( is_page() && $post->ID == $this->settings['activity_page'] ) {
+		if ( is_page() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($wp_query->query_vars['mapado_event']) ) {
 			$params					= array( 'image_sizes' => array('700x250') );
-			$this->current_event	= $this->getActivity( $wp_query->query_vars['event'], $this->token, $params );
+			$this->current_event	= $this->getActivity( $wp_query->query_vars['mapado_event'], $this->token, $params );
 
 			if ( !empty($this->current_event) )
 				$title	= $this->current_event->getTitle() . ' ' . $sep . ' ' . get_bloginfo( 'name' );
@@ -160,7 +172,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventPageTitle ( $title ) {
 		global $post, $wp_query;
 
-		if ( is_page() && in_the_loop() && $post->ID == $this->settings['activity_page'] && !empty($this->current_event) ) {
+		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($this->current_event) ) {
 			$title	= $this->current_event->getTitle();
 		}
 
@@ -176,12 +188,13 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventPage ( $content ) {
 		global $post, $wp_query;
 
-		if ( is_page() && in_the_loop() && $post->ID == $this->settings['activity_page'] ) {
+		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($wp_query->query_vars['mapado_event']) ) {
 			if ( empty($this->current_event) )
 				return 'Accès non autorisé, vérifiez vos identifiants Mapado.';
 
-			/* To fix the infinite loop with apply_filter on activity description */
-			if ( !preg_match('/MAPADO_EVENEMENT/', $content) )
+			if ( empty($this->event_displayed) )
+				$this->event_displayed = true;
+			else
 				return $content;
 
 			$thumbs	= $this->current_event->getImageUrlList();
@@ -209,5 +222,53 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 		if ( is_page() && $post->ID == $this->settings['activity_page'] && !empty($this->settings['widget']) )
 			MapadoUtils::template( 'widget', array('event' => $this->current_event) );
+	}
+
+	/**
+	 * Calcul the thumb size in card listing according to admin settings
+	 */
+	protected function getCardThumbDesign() {
+		$card_thumb_position = $this->settings['card_thumb_position'];
+		if (empty($card_thumb_position)) {
+			$card_thumb_position	= 'left';
+		}
+
+		$card_thumb_orientation = $this->settings['card_thumb_orientation'];
+		if (empty($card_thumb_orientation)) {
+			$card_thumb_orientation = 'portrait';
+		}
+		
+		$card_thumb_size = $this->settings['card_thumb_size'];
+		if (empty($card_thumb_size)) {
+			$card_thumb_size	= 'l';
+		}
+		
+		$card_thumb_ratio = 2;
+		if ($card_thumb_size == 'm') {
+			$card_thumb_ratio = 1;
+		} else if ($card_thumb_size == 's') {
+			$card_thumb_ratio = 0;
+		}
+		
+		if ($card_thumb_position == 'top') {
+			$card_thumb_dimensions = array(500, 120 + $card_thumb_ratio*80);
+		} else {
+			$card_thumb_dimensions = array(100, 150);
+			if ($card_thumb_orientation == 'landscape') {
+				$card_thumb_dimensions = array(150, 100);
+			} else if ($card_thumb_orientation == 'square') {
+				$card_thumb_dimensions = array(150, 150);
+			}
+			foreach ($card_thumb_dimensions as $dimension => $val) {
+				$card_thumb_dimensions[$dimension] = $val * (1 + 0.5*$card_thumb_ratio);
+			}
+		}
+		
+		return array(
+			'position' => $card_thumb_position,
+			'orientation' => $card_thumb_orientation,
+			'size' => $card_thumb_size,
+			'dimensions' => implode('x', $card_thumb_dimensions)
+		);
 	}
 }

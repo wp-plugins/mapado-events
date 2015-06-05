@@ -20,6 +20,8 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 		add_action( 'wp_ajax_ajaxUpdateListSettings', array(&$this, 'ajaxUpdateListSettings') );
 
 		add_action( 'admin_enqueue_scripts', array(&$this, 'enqueueScriptsStyle') );
+
+		add_action( 'admin_init', array(&$this, 'pluginCheck') );
 	}
 
 
@@ -57,6 +59,22 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	}
 
 	/**
+	 * Check plugin version
+	 */
+	public function pluginCheck () {
+		$plugin_datas	= get_plugin_data( plugin_dir_path( dirname( __FILE__ ))  . 'mapado.php' );
+
+		/* Force flush rewrite if the plugin has been updated */
+		if ( isset($this->settings['mapado_version']) && $plugin_datas['Version'] != $this->settings['mapado_version'] ) {
+			$this->flushRules( true );
+
+			/* Update last plugin version on this site */
+			$this->settings['mapado_version']	= $plugin_datas['Version'];
+			update_option( parent::SETTINGS_WP_INDEX, $this->settings );
+		}
+	}
+
+	/**
 	 * Adding mapado in admin settings menu
 	 */
 	public function adminMenu () {
@@ -74,7 +92,13 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	 * Admin settings page
 	 */
 	public function adminSettings () {
-		$notification	= array();
+		/* Values for items per page params */
+		$params_perpage = array( 3, 5, 10, 20, 30, 50, 100 );
+		$params_card_thumb_position = array( 'left' => 'à gauche', 'right' => 'à droite', 'top' => 'en bandeau' );
+		$params_card_thumb_orientation = array( 'portrait' => 'portrait', 'landscape' => 'paysage', 'square' => 'carré' );
+		$params_card_thumb_size = array( 'l' => 'grand', 'm' => 'moyen', 's' => 'petit' );
+
+		$notification = array();
 
 		/* API Settings submit */
 		if ( !empty($_POST['mapado_settings_submit']) ) {
@@ -100,14 +124,14 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			
 			/* Something went wrong */
 			if ( !$api || !$auth ) {
-				$notification	= array(
+				$notification = array(
 					'state'	=> 'error',
 					'text'	=> 'Il y a eu un problème'
 				);
 			}
 			/* Success */
 			else {
-				$notification	= array(
+				$notification = array(
 					'state'	=> 'updated',
 					'text'	=> 'Réglages enregistrés'
 				);
@@ -117,11 +141,16 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 		/* Additional settings page submit */
 		if ( !empty($_POST['mapado_add_settings_submit']) ) {
 			if ( isset($_POST['mapado_widget']) )
-				$this->settings['widget']	= true;
+				$this->settings['widget'] = true;
 			else
-				$this->settings['widget']	= false;
+				$this->settings['widget'] = false;
 
-			$settings	= update_option( parent::SETTINGS_WP_INDEX, $this->settings );
+			$this->settings['perpage'] = $_POST['mapado_perpage'];
+			$this->settings['card_thumb_position'] = $_POST['mapado_card_thumb_position'];
+			$this->settings['card_thumb_orientation'] = $_POST['mapado_card_thumb_orientation'];
+			$this->settings['card_thumb_size'] = $_POST['mapado_card_thumb_size'];
+
+			$settings = update_option( parent::SETTINGS_WP_INDEX, $this->settings );
 
 			/* Something went wrong */
 			if ( !$settings ) {
@@ -143,7 +172,11 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			'notification'	=> $notification,
 			'api'			=> $this->api,
 			'auth'			=> $this->auth,
-			'settings'		=> $this->settings
+			'settings'		=> $this->settings,
+			'perpage'		=> $params_perpage,
+			'card_thumb_position'	=> $params_card_thumb_position,
+			'card_thumb_orientation' => $params_card_thumb_orientation,
+			'card_thumb_size' => $params_card_thumb_size
 		));
 	}
 
@@ -173,10 +206,13 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			if ( empty($this->imported_lists) )
 				$this->imported_lists	= array();
 
+			/* Slugify list slug */
+			$slug	= sanitize_title( $_POST['slug'] );
+
 			$page	= wp_insert_post(array(
 				'post_title'		=> $_POST['title'],
-				'post_name'			=> $_POST['slug'],
-				'post_content'		=> 'LISTE MAPADO',
+				'post_name'			=> $slug,
+				'post_content'		=> '[mapado_list]',
 				'post_status'		=> 'publish',
 				'post_type'     	=> 'page',
 				'post_author'		=> 1,
@@ -190,7 +226,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 				));
 			}
 			else
-				$this->imported_lists[$_POST['uuid']]	= $_POST['slug'];
+				$this->imported_lists[$_POST['uuid']]	= $slug;
 		}
 		/* Delete a list & the associate page */
 		else if ( $_POST['mapado_action'] == 'delete' ) {
