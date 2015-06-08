@@ -30,7 +30,7 @@ $token = $oauth->refreshUserToken('refresh_token');
 
 ### Create a client
 ```php
-$client = \Mapado\Sdk\Client::createClient($token);
+$client = \Mapado\Sdk\Client::createClient($token, 'fr');
 ```
 
 ### Rubrics

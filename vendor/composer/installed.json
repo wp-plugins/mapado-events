@@ -212,17 +212,17 @@
     },
     {
         "name": "mapado/php-sdk",
-        "version": "v0.8.1",
-        "version_normalized": "0.8.1.0",
+        "version": "v0.9.0",
+        "version_normalized": "0.9.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mapado/php-sdk.git",
-            "reference": "55caf95cfdbfba70219f7ab1f6529f7bc1142ec3"
+            "reference": "457bb8f567a433f3769b163c85dc7bf91e1dca0b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mapado/php-sdk/zipball/55caf95cfdbfba70219f7ab1f6529f7bc1142ec3",
-            "reference": "55caf95cfdbfba70219f7ab1f6529f7bc1142ec3",
+            "url": "https://api.github.com/repos/mapado/php-sdk/zipball/457bb8f567a433f3769b163c85dc7bf91e1dca0b",
+            "reference": "457bb8f567a433f3769b163c85dc7bf91e1dca0b",
             "shasum": ""
         },
         "require": {
@@ -233,7 +233,7 @@
             "raulfraile/ladybug": "~1.0",
             "symfony/yaml": "~2.0"
         },
-        "time": "2015-04-21 15:29:13",
+        "time": "2015-04-24 06:58:28",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -247,7 +247,7 @@
         ],
         "authors": [
             {
-                "name": "Julien Deniau",
+                "name": "Julien DENIAU",
                 "email": "julien.deniau@gmail.com"
             }
         ],

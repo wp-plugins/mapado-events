@@ -11,7 +11,7 @@
 	<?php if ( $vars['event']->getFrontPlaceName() && $vars['event']->getAddress() ) : ?>
 		<div>
 			<div>
-				<a href="<?php echo $vars['event']->getLinks()['mapado_place_url']['href'] ?>" target="_blank"><?php echo $vars['event']->getFrontPlaceName() ?></a> - <?php echo $vars['event']->getAddress()->getFormattedAddress() ?>
+				<a href="<?php echo MapadoUtils::getPlaceUrl( $vars['event']->getLinks() ) ?>" target="_blank"><?php echo $vars['event']->getFrontPlaceName() ?></a> - <?php echo $vars['event']->getAddress()->getFormattedAddress() ?>
 			</div>
 		</div>
 	<?php endif; ?>
