@@ -1,0 +1,57 @@
+/**
+ * Card
+ */
+#mapado-plugin .mpd-card {
+    clear: left;
+    overflow: hidden; /* Create a BFC to prevent float wrapping */
+    background-color: #F7F7F7;
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Thumb position */
+#mapado-plugin .mpd-card__thumb--right,
+#mapado-plugin .mpd-card__thumb--left {
+    float: left;
+    max-width: none;
+}
+#mapado-plugin .mpd-card__thumb--right {
+    float: right;
+}
+
+#mapado-plugin .mpd-card__thumb--top {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Thumb size */
+#mapado-plugin .mpd-card__thumb--s.mpd-card__thumb--right,
+#mapado-plugin .mpd-card__thumb--s.mpd-card__thumb--left {
+    margin: 25px 35px;
+}
+#mapado-plugin .mpd-card__thumb--s.mpd-card__thumb--left {
+    margin-right: 0;
+}
+#mapado-plugin .mpd-card__thumb--s.mpd-card__thumb--right {
+    margin-left: 0;
+}
+
+#mapado-plugin .mpd-card__body {
+    overflow: hidden; /* Create a BFC to prevent float wrapping */
+    padding: 20px 35px;
+    font-size: 12px;
+}
+
+@media (max-width: 540px) {
+    #mapado-plugin .mpd-card__thumb,
+    #mapado-plugin .mpd-card__thumb--s.mpd-card__thumb {
+        max-width: 100%;
+        display: block;
+        float: none;
+        margin: 0 auto;
+    }
+
+    #mapado-plugin .mpd-card__body {
+        padding: 10px 20px;
+    }
+}

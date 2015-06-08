@@ -6,6 +6,11 @@
 (function($) {
 
 $(document).ready(function() {
+	/* Slug in lower case */
+	$('#mapado_user_lists').on( 'change', '.list-slug', function() {
+		$(this).val( $(this).val().toLowerCase() );
+	});
+
 	/* Import list action */
 	$('#mapado_user_lists').on('click', '.list .button', function(e) {
 		var $button	= $(this);
@@ -51,6 +56,20 @@ $(document).ready(function() {
 		e.preventDefault();
 		return false;
 	});
+	
+	/* Thumb position support nice bandeau */
+	$positionSelect = $('#mapado_card_thumb_position');
+	$orientationSelect = $('#mapado_card_thumb_orientation');
+	function updateOrientationForm() {
+		if ($positionSelect.val() == 'top') {
+			$orientationSelect.val('landscape')
+				.attr('disabled', true);
+		} else {
+			$orientationSelect.attr('disabled', false);
+		}
+	}
+	$positionSelect.on('change', updateOrientationForm);
+	updateOrientationForm();
 });
 
 

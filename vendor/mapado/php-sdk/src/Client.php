@@ -99,9 +99,9 @@ class Client
      * @access public
      * @return Client
      */
-    public static function createClient(AccessToken $token)
+    public static function createClient(AccessToken $token, $language = 'en')
     {
-        $client = new HttpClient();
+        $client = new HttpClient([ 'defaults' => [ 'headers'  => [ 'Accept-Language' => $language ]]]);
         return new self($client, $token);
     }
 }
