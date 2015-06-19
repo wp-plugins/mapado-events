@@ -1,8 +1,9 @@
-<div class="mpd-card-list__item">
+<div class="chew-cell">
     <div class="mpd-card">
         <?php if ( !empty($vars['activity']->getImageUrlList()[$vars['card_thumb_design']['dimensions']][0]) ) : ?>
             <img class="mpd-card__thumb
-                        mpd-card__thumb--<?= $vars['card_thumb_design']['position'] ?>
+                        mpd-card__thumb--<?= $vars['card_thumb_design']['position_type'] ?>
+                        mpd-card__thumb--<?= $vars['card_thumb_design']['position_side'] ?>
                         mpd-card__thumb--<?= $vars['card_thumb_design']['orientation'] ?>
                         mpd-card__thumb--<?= $vars['card_thumb_design']['size'] ?>"
                  src="<?php echo $vars['activity']->getImageUrlList()[$vars['card_thumb_design']['dimensions']][0] ?>"
@@ -30,6 +31,8 @@
                     <a href="<?php echo MapadoUtils::getPlaceUrl( $vars['activity']->getLinks() ) ?>" target="_blank">
                         <?php echo $vars['activity']->getFrontPlaceName() ?>
                     </a>
+                    <span class="mpd-card__city"> - <?php echo $vars['activity']->getAddress()->getCity() ?>
+                    </span>
                 </p>
             <?php endif; ?>
     

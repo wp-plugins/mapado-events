@@ -93,10 +93,11 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	 */
 	public function adminSettings () {
 		/* Values for items per page params */
-		$params_perpage = array( 3, 5, 10, 20, 30, 50, 100 );
+		$params_perpage = array( 3, 5, 10, 20, 30, 40 );
 		$params_card_thumb_position = array( 'left' => 'à gauche', 'right' => 'à droite', 'top' => 'en bandeau' );
 		$params_card_thumb_orientation = array( 'portrait' => 'portrait', 'landscape' => 'paysage', 'square' => 'carré' );
 		$params_card_thumb_size = array( 'l' => 'grand', 'm' => 'moyen', 's' => 'petit' );
+		$params_card_column_max = array( '4' => 'jusqu\'à 4', '3' => 'jusqu\'à 3', '2' => 'jusqu\'à 2', '1' => 'toujours 1' );
 
 		$notification = array();
 
@@ -149,6 +150,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			$this->settings['card_thumb_position'] = $_POST['mapado_card_thumb_position'];
 			$this->settings['card_thumb_orientation'] = $_POST['mapado_card_thumb_orientation'];
 			$this->settings['card_thumb_size'] = $_POST['mapado_card_thumb_size'];
+			$this->settings['card_column_max'] = $_POST['mapado_card_column_max'];
 
 			$settings = update_option( parent::SETTINGS_WP_INDEX, $this->settings );
 
@@ -176,7 +178,8 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			'perpage'		=> $params_perpage,
 			'card_thumb_position'	=> $params_card_thumb_position,
 			'card_thumb_orientation' => $params_card_thumb_orientation,
-			'card_thumb_size' => $params_card_thumb_size
+			'card_thumb_size' => $params_card_thumb_size,
+			'card_column_max' => $params_card_column_max
 		));
 	}
 
@@ -208,6 +211,16 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 
 			/* Slugify list slug */
 			$slug	= sanitize_title( $_POST['slug'] );
+
+			/* Check if slug already exist */
+			if ( $wpdb->get_row("SELECT post_name FROM " . $wpdb->prefix . "posts WHERE post_name = '" . $slug . "'", 'ARRAY_A') ) {
+				echo json_encode(array(
+					'state' => 'error',
+					'msg'	=> "L'identifiant est déjà utilisé"
+				));
+
+				exit;
+			}
 
 			$page	= wp_insert_post(array(
 				'post_title'		=> $_POST['title'],

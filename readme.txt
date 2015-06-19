@@ -3,7 +3,7 @@ Contributors: hultra
 Tags: calendar, event, event calendar, event management, events, events calendar, concert, meeting
 Requires at least: 4.0
 Tested up to: 4.1
-Stable tag: 0.2.8
+Stable tag: 0.2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,8 +43,8 @@ Create a Mapado account and get it on your [profile/my applications page](http:/
 
 == Changelog ==
 
-= 0.2.7 =
-Bug fixes.
+= 0.2.9 =
+Bug fixes. Better pagination
 
 = 0.2.6 =
 Bug fixes. New layout options.

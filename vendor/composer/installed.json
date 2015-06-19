@@ -99,17 +99,17 @@
     },
     {
         "name": "guzzlehttp/ringphp",
-        "version": "1.0.7",
-        "version_normalized": "1.0.7.0",
+        "version": "1.1.0",
+        "version_normalized": "1.1.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/RingPHP.git",
-            "reference": "52d868f13570a9a56e5fce6614e0ec75d0f13ac2"
+            "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/RingPHP/zipball/52d868f13570a9a56e5fce6614e0ec75d0f13ac2",
-            "reference": "52d868f13570a9a56e5fce6614e0ec75d0f13ac2",
+            "url": "https://api.github.com/repos/guzzle/RingPHP/zipball/dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
+            "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
             "shasum": ""
         },
         "require": {
@@ -124,11 +124,11 @@
         "suggest": {
             "ext-curl": "Guzzle will use specific adapters if cURL is present"
         },
-        "time": "2015-03-30 01:43:20",
+        "time": "2015-05-20 03:37:09",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.0-dev"
+                "dev-master": "1.1-dev"
             }
         },
         "installation-source": "dist",
@@ -152,29 +152,29 @@
     },
     {
         "name": "guzzlehttp/guzzle",
-        "version": "5.2.0",
-        "version_normalized": "5.2.0.0",
+        "version": "5.3.0",
+        "version_normalized": "5.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/guzzle/guzzle.git",
-            "reference": "475b29ccd411f2fa8a408e64576418728c032cfa"
+            "reference": "f3c8c22471cb55475105c14769644a49c3262b93"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/475b29ccd411f2fa8a408e64576418728c032cfa",
-            "reference": "475b29ccd411f2fa8a408e64576418728c032cfa",
+            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f3c8c22471cb55475105c14769644a49c3262b93",
+            "reference": "f3c8c22471cb55475105c14769644a49c3262b93",
             "shasum": ""
         },
         "require": {
-            "guzzlehttp/ringphp": "~1.0",
+            "guzzlehttp/ringphp": "^1.1",
             "php": ">=5.4.0"
         },
         "require-dev": {
             "ext-curl": "*",
-            "phpunit/phpunit": "~4.0",
-            "psr/log": "~1.0"
+            "phpunit/phpunit": "^4.0",
+            "psr/log": "^1.0"
         },
-        "time": "2015-01-28 01:03:29",
+        "time": "2015-05-20 03:47:55",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -212,17 +212,17 @@
     },
     {
         "name": "mapado/php-sdk",
-        "version": "v0.9.0",
-        "version_normalized": "0.9.0.0",
+        "version": "v0.10.0",
+        "version_normalized": "0.10.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/mapado/php-sdk.git",
-            "reference": "457bb8f567a433f3769b163c85dc7bf91e1dca0b"
+            "reference": "2270b733b125b1eef14cc8c7d41f903f6b50c788"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/mapado/php-sdk/zipball/457bb8f567a433f3769b163c85dc7bf91e1dca0b",
-            "reference": "457bb8f567a433f3769b163c85dc7bf91e1dca0b",
+            "url": "https://api.github.com/repos/mapado/php-sdk/zipball/2270b733b125b1eef14cc8c7d41f903f6b50c788",
+            "reference": "2270b733b125b1eef14cc8c7d41f903f6b50c788",
             "shasum": ""
         },
         "require": {
@@ -233,7 +233,7 @@
             "raulfraile/ladybug": "~1.0",
             "symfony/yaml": "~2.0"
         },
-        "time": "2015-04-24 06:58:28",
+        "time": "2015-06-18 14:09:11",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -247,7 +247,7 @@
         ],
         "authors": [
             {
-                "name": "Julien DENIAU",
+                "name": "Julien Deniau",
                 "email": "julien.deniau@gmail.com"
             }
         ],

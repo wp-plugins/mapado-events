@@ -37,6 +37,8 @@ $(document).ready(function() {
 				/* No error, refresh list */
 				if ( json.state == 'updated' )
 					loadUserLists();
+				else
+					$button.removeClass('disabled');
 
 				$('#mapado-userlists-notifications').addClass( json.state ).html( '<p><strong>' + json.msg + '</strong></p>' ).show();
 

@@ -18,7 +18,6 @@ Class MapadoPublicAuth extends MapadoPlugin {
 		$this->setDatas();
 		$this->setToken();
 
-		add_action( 'the_title', array(&$this, 'eventsPageTitle'), 14 );
 		add_action( 'the_content', array(&$this, 'eventPage'), 15 );
 		add_action( 'the_title', array(&$this, 'eventPageTitle'), 15 );
 		add_filter( 'wp_title', array(&$this, 'eventWpTitle'), 10, 15 );
@@ -80,19 +79,25 @@ Class MapadoPublicAuth extends MapadoPlugin {
 				return 'Accès non autorisé, vérifiez vos identifiants Mapado.';
 
 			/* Pagination */
-			$perpage	= $this->settings['perpage'];
 			$page		= 1;
+			$perpage = 10;
+			if ( !empty($this->settings['perpage']) ) {
+				$perpage = $this->settings['perpage'];
+			}
 
-			/* Default value 'per page' */
-			if ( empty($perpage) )
-				$perpage	= 10;
 
-			if ( !empty($wp_query->query_vars['paged']) )
+			if ( !empty($wp_query->query_vars['paged']) ) {
 				$page	= $wp_query->query_vars['paged'];
+			}
 
 			$start		= ($page * $perpage) - $perpage;
-			$params		= array( 'image_sizes' => array('100x150', '150x225', '200x300', '150x100', '225x150', '300x200', '150x150', '225x225', '300x300', '500x120', '500x200', '500x280'), 'offset' => $start, 'limit' => $perpage );
-			$results	= $client->activity->program( $uuid, $params );
+            $params		= array(
+                'image_sizes' => array('100x150', '150x225', '200x300', '150x100', '225x150', '300x200', '150x150', '225x225', '300x300', '500x120', '500x200', '500x280'),
+                'offset' => $start,
+                'limit' => $perpage,
+                'list' => $uuid,
+            );
+			$results	= $client->activity->findBy( $params );
 
 			$pagination	= array(
 				'perpage'	=> $perpage,
@@ -102,14 +107,19 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 			/* Card design */
 			$card_thumb_design = $this->getCardThumbDesign();
+			$card_column_max = '4';
+			if ( !empty($this->settings['card_column_max']) ) {
+				$card_column_max = $this->settings['card_column_max'];
+			}
 			
 			ob_start();
-
+			
 			MapadoUtils::template( 'events_list', array(
-				'uuid'			=> $uuid,
-				'list_slug'		=> $post->post_name,
-				'events'		=> $results,
-				'pagination'	=> $pagination,
+				'uuid'				=> $uuid,
+				'list_slug'			=> $post->post_name,
+				'events'			=> $results,
+				'pagination'		=> $pagination,
+				'card_column_max'	=> $card_column_max,
 				'card_thumb_design'	=> $card_thumb_design
 			));
 
@@ -119,30 +129,6 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 			return $html;
 		}
-	}
-
-	/**
-	 * Filtering post title for event single page
-	 * @param original title
-	 * @return filtered title
-	 */
-	public function eventsPageTitle ( $title ) {
-		global $post, $wp_query;
-
-		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && empty($wp_query->query_vars['mapado_event']) ) {
-			/* Retrieve list uuid with slug */
-			foreach ( $this->imported_lists as $uuid => $slug ) {
-				if ( $slug == $post->post_name )
-					break;
-			}
-
-			$activity	= $this->getActivity( $uuid, $this->token );
-
-			if ( !empty($activity) )
-				$title	= $activity->getTitle();
-		}
-
-		return $title;
 	}
 
 	/**
@@ -225,50 +211,55 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	}
 
 	/**
-	 * Calcul the thumb size in card listing according to admin settings
+	 * Calculate the thumb size in card listing according to admin settings
 	 */
-	protected function getCardThumbDesign() {
-		$card_thumb_position = $this->settings['card_thumb_position'];
-		if (empty($card_thumb_position)) {
-			$card_thumb_position	= 'left';
+	protected function getCardThumbDesign () {
+		$card_thumb_position_type = 'side';
+		$card_thumb_position_side = 'left';
+		if ( !empty($this->settings['card_thumb_position']) ) {
+			$card_thumb_position_side	= $this->settings['card_thumb_position'];
 		}
 
-		$card_thumb_orientation = $this->settings['card_thumb_orientation'];
-		if (empty($card_thumb_orientation)) {
-			$card_thumb_orientation = 'portrait';
+		$card_thumb_orientation = 'portrait';
+		if ( !empty($this->settings['card_thumb_orientation']) ) {
+			$card_thumb_orientation = $this->settings['card_thumb_orientation'];
 		}
 		
-		$card_thumb_size = $this->settings['card_thumb_size'];
-		if (empty($card_thumb_size)) {
-			$card_thumb_size	= 'l';
+		$card_thumb_size	= 'l';
+		if ( !empty($this->settings['card_thumb_size']) ) {
+			$card_thumb_size	= $this->settings['card_thumb_size'];
 		}
 		
-		$card_thumb_ratio = 2;
-		if ($card_thumb_size == 'm') {
-			$card_thumb_ratio = 1;
-		} else if ($card_thumb_size == 's') {
-			$card_thumb_ratio = 0;
+		$card_thumb_ratio	= 2;
+		if ( $card_thumb_size == 'm' ) {
+			$card_thumb_ratio	= 1;
+		} else if ($card_thumb_size == 's' ) {
+			$card_thumb_ratio	= 0;
 		}
 		
-		if ($card_thumb_position == 'top') {
-			$card_thumb_dimensions = array(500, 120 + $card_thumb_ratio*80);
+		if ( $card_thumb_position_side == 'top' ) {
+			$card_thumb_position_type = 'bandeau';
+			$card_thumb_dimensions = array( 500, (120 + $card_thumb_ratio * 80) );
 		} else {
-			$card_thumb_dimensions = array(100, 150);
-			if ($card_thumb_orientation == 'landscape') {
-				$card_thumb_dimensions = array(150, 100);
+			$card_thumb_dimensions	= array( 100, 150 );
+
+			if ( $card_thumb_orientation == 'landscape' ) {
+				$card_thumb_dimensions	= array( 150, 100 );
 			} else if ($card_thumb_orientation == 'square') {
-				$card_thumb_dimensions = array(150, 150);
+				$card_thumb_dimensions	= array( 150, 150 );
 			}
-			foreach ($card_thumb_dimensions as $dimension => $val) {
-				$card_thumb_dimensions[$dimension] = $val * (1 + 0.5*$card_thumb_ratio);
+
+			foreach ( $card_thumb_dimensions as $dimension => $val ) {
+				$card_thumb_dimensions[$dimension]	= $val * ( 1 + 0.5*$card_thumb_ratio );
 			}
 		}
 		
 		return array(
-			'position' => $card_thumb_position,
-			'orientation' => $card_thumb_orientation,
-			'size' => $card_thumb_size,
-			'dimensions' => implode('x', $card_thumb_dimensions)
+			'position_type'		=> $card_thumb_position_type,
+			'position_side'		=> $card_thumb_position_side,
+			'orientation'	=> $card_thumb_orientation,
+			'size'			=> $card_thumb_size,
+			'dimensions'	=> implode('x', $card_thumb_dimensions)
 		);
 	}
 }

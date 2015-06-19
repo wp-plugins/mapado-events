@@ -14,6 +14,7 @@ class AddressTransformer extends AbstractTransformer
             ->setFormattedAddress($this->getFromArray($item, 'formatted_address'))
             ->setLatitude($this->getFromArray($item, 'latitude'))
             ->setLongitude($this->getFromArray($item, 'longitude'))
+            ->setCity($this->getFromArray($item, 'city'))
         ;
 
         return  $return;

@@ -99,13 +99,30 @@
 
 			<tr>
 				<td>
+					<label for="mapado_card_column_max">Nombre de colonnes maximum : </label>
+				</td>
+				<td>
+					<select name="mapado_card_column_max" id="mapado_card_column_max">
+						<?php foreach ( $vars['card_column_max'] as $key => $val ) : ?>
+							<option value="<?php echo $key ?>"
+								<?php if ( !empty($vars['settings']['card_column_max']) && $vars['settings']['card_column_max'] == $key ) echo 'selected="selected"'; ?>
+								>
+								<?php echo $val ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
 					<label for="mapado_card_thumb_position">Position des images dans les listes : </label>
 				</td>
 				<td>
 					<select name="mapado_card_thumb_position" id="mapado_card_thumb_position">
 						<?php foreach ( $vars['card_thumb_position'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( $vars['settings']['card_thumb_position'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ( !empty($vars['settings']['card_thumb_position']) && $vars['settings']['card_thumb_position'] == $key ) echo 'selected="selected"'; ?>
 							>
 								<?php echo $val ?>
 							</option>
@@ -122,7 +139,7 @@
 					<select name="mapado_card_thumb_orientation" id="mapado_card_thumb_orientation">
 						<?php foreach ( $vars['card_thumb_orientation'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( $vars['settings']['card_thumb_orientation'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ( !empty($vars['settings']['card_thumb_orientation']) && $vars['settings']['card_thumb_orientation'] == $key ) echo 'selected="selected"'; ?>
 							>
 								<?php echo $val ?>
 							</option>
@@ -139,7 +156,7 @@
 					<select name="mapado_card_thumb_size" id="mapado_card_thumb_size">
 						<?php foreach ( $vars['card_thumb_size'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( $vars['settings']['card_thumb_size'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ( !empty($vars['settings']['card_thumb_size']) && $vars['settings']['card_thumb_size'] == $key ) echo 'selected="selected"'; ?>
 								>
 								<?php echo $val ?>
 							</option>
