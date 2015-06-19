@@ -19,7 +19,7 @@
 	<tr id="list-<?php echo $list->getUuid() ?>" data-uuid="<?php echo $list->getUuid() ?>" class="list<?php echo $class ?>">
 		<td>
 			<?php if ( $exist ) : ?>
-				<a href="<?php echo MapadoUtils::getUserListUrl( $vars['imported_lists'][$list->getUuid()] ) ?>" class="thickbox" title="" target="_blank"><?php echo $list->getTitle() ?></a>
+				<a href="<?php echo MapadoUtils::getUserListUrl( $vars['imported_lists'][$list->getUuid()] ) ?>" title="" target="_blank"><?php echo $list->getTitle() ?></a>
 			<?php else :
 				echo $list->getTitle(); 
 			endif; ?>

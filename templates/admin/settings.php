@@ -56,6 +56,7 @@
 	</table>
 	</form>
 
+
 	<!-- Settings activity single page -->
 	<form id="mapado_add_settings_form" action="" method="POST">
 	<table id="mapado_add_settings_table" class="mapado_table widefat">
@@ -74,15 +75,99 @@
 		</tfoot>
 
 		<tbody>
-			<tr>
-				<td colspan="3">
-					<input name="mapado_widget" id="mapado_widget" type="checkbox" value="1" <?php if ( !empty($vars['settings']['widget']) ) echo 'checked="checked"' ?>>
+			<tr class="alternate">
+				<td>
 					<label for="mapado_widget">Afficher les informations principale dans un widget ?</label>
+				</td>
+				<td>
+					<input name="mapado_widget" id="mapado_widget" type="checkbox" value="1" <?php if ( !empty($vars['settings']['widget']) ) echo 'checked="checked"' ?>>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<label for="mapado_perpage">Nombre d'événements par page : </label>
+				</td>
+				<td>
+					<select name="mapado_perpage" id="mapado_perpage">
+						<?php foreach ( $vars['perpage'] as $val ) : ?>
+							<option value="<?php echo $val ?>" <?php if ( !empty($vars['settings']['perpage']) && $vars['settings']['perpage'] == $val ) echo 'selected="selected"'; ?>><?php echo $val ?></option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<label for="mapado_card_column_max">Nombre de colonnes maximum : </label>
+				</td>
+				<td>
+					<select name="mapado_card_column_max" id="mapado_card_column_max">
+						<?php foreach ( $vars['card_column_max'] as $key => $val ) : ?>
+							<option value="<?php echo $key ?>"
+								<?php if ( !empty($vars['settings']['card_column_max']) && $vars['settings']['card_column_max'] == $key ) echo 'selected="selected"'; ?>
+								>
+								<?php echo $val ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<label for="mapado_card_thumb_position">Position des images dans les listes : </label>
+				</td>
+				<td>
+					<select name="mapado_card_thumb_position" id="mapado_card_thumb_position">
+						<?php foreach ( $vars['card_thumb_position'] as $key => $val ) : ?>
+							<option value="<?php echo $key ?>"
+								<?php if ( !empty($vars['settings']['card_thumb_position']) && $vars['settings']['card_thumb_position'] == $key ) echo 'selected="selected"'; ?>
+							>
+								<?php echo $val ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<label for="mapado_card_thumb_orientation">Orientation des images dans les listes : </label>
+				</td>
+				<td>
+					<select name="mapado_card_thumb_orientation" id="mapado_card_thumb_orientation">
+						<?php foreach ( $vars['card_thumb_orientation'] as $key => $val ) : ?>
+							<option value="<?php echo $key ?>"
+								<?php if ( !empty($vars['settings']['card_thumb_orientation']) && $vars['settings']['card_thumb_orientation'] == $key ) echo 'selected="selected"'; ?>
+							>
+								<?php echo $val ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<label for="mapado_card_thumb_size">Taille des images dans les listes : </label>
+				</td>
+				<td>
+					<select name="mapado_card_thumb_size" id="mapado_card_thumb_size">
+						<?php foreach ( $vars['card_thumb_size'] as $key => $val ) : ?>
+							<option value="<?php echo $key ?>"
+								<?php if ( !empty($vars['settings']['card_thumb_size']) && $vars['settings']['card_thumb_size'] == $key ) echo 'selected="selected"'; ?>
+								>
+								<?php echo $val ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 	</form>
+
 
 	<!-- AJAX user lists notifications -->
 	<div id="mapado-userlists-notifications" class="mapado-notifications updated settings-error" style="display:none"></div>
