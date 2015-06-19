@@ -20,41 +20,17 @@
 
 
 /**
- * Card
+ * Card List
  */
-#mapado-plugin .mpd-card {
-	clear: left;
-	min-height: 250px;
-	overflow: hidden; /* Create a BFC to prevent float wrapping */
-	margin: 15px 0 0;
-	background-color: #F7F7F7;
-	background-color: rgba(0, 0, 0, 0.03);
+#mapado-plugin .mpd-card-list__footer {
+	clear: both;
+	overflow: hidden;
 }
 
-#mapado-plugin .mpd-card__thumb {
-	float: left;
-	height: 250px;
-	max-width: none;
-}
 
-#mapado-plugin .mpd-card__body {
-	overflow: hidden; /* Create a BFC to prevent float wrapping */
-	padding: 20px 35px;
-	font-size: 12px;
-}
-
-@media (max-width: 540px) {
-	#mapado-plugin .mpd-card__thumb {
-		display: block;
-		float: none;
-		margin: 0 auto;
-	}
-
-	#mapado-plugin .mpd-card__body {
-		padding: 10px 20px;
-	}
-}
-
+/**
+ * Card 
+ */
 #mapado-plugin .mpd-card__title {
 	margin: 0;
 }
@@ -71,21 +47,6 @@
 	white-space: nowrap;
 }
 
-
-/**
- * Card List
- */
-#mapado-plugin .mpd-card-list__item {
-	margin: 15px 0 0;
-}
-
-#mapado-plugin .mpd-card-list__item:first-child {
-	margin-top: 0;
-}
-
-#mapado-plugin .mpd-card-list__footer {
-	overflow: hidden;
-}
 
 
 /**
