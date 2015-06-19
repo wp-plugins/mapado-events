@@ -204,6 +204,8 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	 * Save a user list settings
 	 */
 	function ajaxUpdateListSettings () {
+		global $wpdb;
+		
 		/* Add a list */
 		if ( $_POST['mapado_action'] == 'import' ) {
 			if ( empty($this->imported_lists) )

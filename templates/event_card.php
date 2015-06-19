@@ -31,8 +31,11 @@
                     <a href="<?php echo MapadoUtils::getPlaceUrl( $vars['activity']->getLinks() ) ?>" target="_blank">
                         <?php echo $vars['activity']->getFrontPlaceName() ?>
                     </a>
-                    <span class="mpd-card__city"> - <?php echo $vars['activity']->getAddress()->getCity() ?>
-                    </span>
+                    <?php if ($vars['activity']->getAddress()) : ?>
+                        <span class="mpd-card__city">
+                            - <?php echo $vars['activity']->getAddress()->getCity() ?>
+                        </span>
+                    <?php endif; ?>
                 </p>
             <?php endif; ?>
     
