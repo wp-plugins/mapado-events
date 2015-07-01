@@ -35,6 +35,14 @@ class Address
      * @access private
      */
     private $longitude;
+    
+    /**
+     * city
+     * 
+     * var string
+     * @access private
+     */
+    private $city;
 
     /**
      * Get uuid.
@@ -118,5 +126,27 @@ class Address
     {
         $this->longitude = $longitude;
         return $this;
+    }
+   
+    /**
+     * Set city.
+     *
+     * @param string city the value to set.
+     * return self
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+        return $this;
+    }
+    
+    /**
+     * Get city
+     *
+     * @return string
+     */
+    public function getCity()
+    {
+        return $this->city;
     }
 }
