@@ -73,7 +73,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventsPage ( $atts ) {
 		global $wp_query, $post;
 
-		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && empty($wp_query->query_vars['mapado_event']) ) {
+		if ( is_page() && in_the_loop() && !empty($this->imported_lists) && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && empty($wp_query->query_vars['mapado_event']) ) {
 			/* Check token validity */
 			if ( !$client = $this->getClient($this->token) )
 				return 'Accès non autorisé, vérifiez vos identifiants Mapado.';
@@ -170,7 +170,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventPageTitle ( $title ) {
 		global $post, $wp_query;
 
-		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($this->current_event) ) {
+		if ( is_page() && in_the_loop() && !empty($this->imported_lists) && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($this->current_event) ) {
 			$title	= $this->current_event->getTitle();
 		}
 
@@ -186,7 +186,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventPage ( $content ) {
 		global $post, $wp_query;
 
-		if ( is_page() && in_the_loop() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($wp_query->query_vars['mapado_event']) ) {
+		if ( is_page() && in_the_loop() && !empty($this->imported_lists) && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($wp_query->query_vars['mapado_event']) ) {
 			if ( empty($this->current_event) )
 				return 'Accès non autorisé, vérifiez vos identifiants Mapado.';
 
