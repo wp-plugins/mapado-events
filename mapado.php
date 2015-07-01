@@ -3,7 +3,7 @@
  * Plugin Name: Mapado for Wordpress
  * Plugin URI: http://www.mapado.com/
  * Description: Official Mapado plugin for Wordpress. Display lists of events curated on Mapado into your Wordpress blog.
- * Version: 0.2.3
+ * Version: 0.2.12
  * Author: Mapado
  * Author URI:  http://www.mapado.com/
  * License: GPL2 license
@@ -17,6 +17,7 @@ require_once MAPADO_PLUGIN_PATH . 'vendor/autoload.php';
 /* Require classes */
 require_once MAPADO_PLUGIN_PATH . 'class/private.auth.php';
 require_once MAPADO_PLUGIN_PATH . 'class/public.auth.php';
+require_once MAPADO_PLUGIN_PATH . 'class/setting.class.php';
 require_once MAPADO_PLUGIN_PATH . 'class/utils.class.php';
 require_once MAPADO_PLUGIN_PATH . 'class/widget.class.php';
 
@@ -24,9 +25,10 @@ Class MapadoPlugin {
 	protected	$api,
 				$settings, 
 				$client, 
-				$imported_lists;
+				$imported_lists,
+				$plugin_basename;
 
-	/* Options names in wp_options table */
+	/* Options names in settings array, stored in wp_options table */
 	const API_WP_INDEX			= 'mapado_api';
 	const SETTINGS_WP_INDEX 	= 'mapado_settings';
 	const AUTH_WP_INDEX 		= 'mapado_settings_auth';
@@ -34,7 +36,9 @@ Class MapadoPlugin {
 	const USERLISTS_WP_INDEX 	= 'mapado_user_lists';
 
 
-
+	/**
+	 * Not used
+	 */
 	function __construct () {
 	}
 
@@ -42,6 +46,8 @@ Class MapadoPlugin {
 	 * Utils function to get & set settings from WP DB
 	 */
 	function setDatas () {
+		$this->plugin_basename	= plugin_basename( __FILE__ );
+
 		$this->setAccess();
 		$this->setSettings();
 		$this->setUserImportedLists();
@@ -61,7 +67,7 @@ Class MapadoPlugin {
 	 * Get & set the additionnal settings from WP DB
 	 */
 	protected function setSettings () {
-		$this->settings	= get_option( self::SETTINGS_WP_INDEX );
+		$this->settings	= new MapadoSetting(self::SETTINGS_WP_INDEX);
 	}
 
 	/**
@@ -79,7 +85,7 @@ Class MapadoPlugin {
 		if ( empty($this->client) && empty($token) )
 			return false;
 		else if ( empty($this->client) && !empty($token) )
-			$this->client	= \Mapado\Sdk\Client::createClient( $token );
+			$this->client	= \Mapado\Sdk\Client::createClient( $token, $this->getLocale() );
 
 		return $this->client;
 	}
@@ -108,7 +114,7 @@ Class MapadoPlugin {
 		if ( !$this->getAPIKey() )
 			return false;
 
-		$client	= \Mapado\Sdk\Client::createClient( $this->getToken() );
+		$client	= \Mapado\Sdk\Client::createClient( $this->getToken(), $this->getLocale() );
 
 		return $client->activity->findBy( $params );
 	}
@@ -128,6 +134,21 @@ Class MapadoPlugin {
 			return $client->activity->findOne( $uuid, $image_sizes );
 		else
 			return $client->activity->findOne( $uuid );
+	}
+
+	/**
+	 * Get the locale lang
+	 * @return object client
+	 */
+	public function getLocale () {
+		/* Get locale language */
+		$lang	= 'fr';
+		$locale	= substr( get_locale(), 0, 2 );
+
+		if ( !empty($locale) )
+			$lang	= $locale;
+
+		return $lang;
 	}
 
 	/**
@@ -156,13 +177,14 @@ Class MapadoPlugin {
 	 */
 	protected function initRewriteRules () {
 		add_action( 'init', array(&$this, 'flushRules'), 10, 0 );
-		add_action( 'query_vars', array(&$this, 'insertQueryVars') );
+		add_filter( 'query_vars', array(&$this, 'insertQueryVars') );
 	}
 
 	/**
 	 * WP adding & flushing rewrite rules
+	 * @param force bool Forcing flush rewrite
 	 */
-	public function flushRules () {
+	public function flushRules ( $force = false ) {
 		global $wp_rewrite;
 
 		/* Get pages for slug */
@@ -172,21 +194,19 @@ Class MapadoPlugin {
 
 			/* For each list page */
 			foreach ( $this->imported_lists as $slug ) {
-				if ( !isset($rules[$slug . '/?$']) || !isset($rules[$slug . '/(/page/([0-9]+))$']) || !isset($rules[$slug . '/([a-z0-9-^/]+)/?']) ) {
+				if ( $force === true || !isset($rules[$slug . '/page/([0-9]+)/?$']) || !isset($rules[$slug . '/([a-z0-9-^/]+)/?']) ) {
 					$update	= true;
-
-					/* List page rules */
-					add_rewrite_rule( $slug . '/?$','index.php?pagename=' . $slug, 'top' );
+					
 					/* List pagination rules */
-					add_rewrite_rule( $slug . '/(/page/([0-9]+))$','index.php?pagename=' . $slug . '&list=$matches[1]&paged=$matches[3]', 'top' );
+					add_rewrite_rule( $slug . '/page/([0-9]+)/?$', 'index.php?pagename=' . $slug . '&paged=$matches[1]', 'top' );
 					/* Activity single page rules */
-					add_rewrite_rule( $slug . '/([^/]+)/?$','index.php?page_id=' . $this->settings['activity_page'] . '&event=$matches[1]', 'top' );
+					add_rewrite_rule( $slug . '/([^/]+)/?$', 'index.php?pagename=' . $slug . '&mapado_event=$matches[1]', 'top' );
 				}
 			}
 
 			/* Flush rules */
 			if ( $update === true )
-				$wp_rewrite->flush_rules();
+				flush_rewrite_rules();
 		}
 	}
 
@@ -194,7 +214,7 @@ Class MapadoPlugin {
 	 * Inserting custom query vars
 	 */
 	public function insertQueryVars ( $vars ) {
-		array_push( $vars, 'event' );
+		array_push( $vars, 'mapado_event' );
 
 		return $vars;
 	}
@@ -275,6 +295,5 @@ function mapado_plugin () {
 	else
 		$mapado	= new MapadoPublicAuth();
 }
-
 
 
