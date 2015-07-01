@@ -24,7 +24,7 @@
 				<div>
 					<label>Lieu</label>
 					<div>
-						<a href="<?php echo $vars['event']->getLinks()['mapado_place_url']['href'] ?>" target="_blank">
+						<a href="<?php echo MapadoUtils::getPlaceUrl( $vars['event']->getLinks() ) ?>" target="_blank">
 							<?php echo $vars['event']->getFrontPlaceName() ?>
 						</a>
 						 - <?php echo $vars['event']->getAddress()->getFormattedAddress() ?>

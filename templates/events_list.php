@@ -6,51 +6,28 @@
 ?>
 
 <!-- List -->
-<div id="mapado-plugin" class="mpd-card-list">
-	
-	<?php foreach ( $vars['events'] as $activity ) : ?>
-		<div class="mpd-car-list__item mpd-card">
-			<?php if ( !empty($activity->getImageUrlList()['200x250'][0]) ) : ?>
-				<img class="mpd-card__thumb"
-					 src="<?php echo $activity->getImageUrlList()['200x250'][0] ?>"
-					 alt="<?php echo $activity->getTitle() ?>"
-					/>
-			<?php endif; ?>
-
-			<div class="mpd-card__body">
-				<?php if ( $activity->getTitle() ) : ?>
-					<h3 class="mpd-card__title">
-						<a href="<?php echo MapadoUtils::getEventUrl( $activity->getUuid(), $vars['list_slug'] ) ?>">
-							<?php echo $activity->getTitle() ?>
-						</a>
-					</h3>
-				<?php endif; ?>
-	
-				<?php if ( $activity->getShortDate() ) : ?>
-					<p class="mpd-card__date">
-						<?php echo $activity->getShortDate() ?>
-					</p>
-				<?php endif; ?>
-	
-				<?php if ( $activity->getFrontPlaceName() ) : ?>
-					<p class="mpd-card__address">
-						<a href="<?php echo $activity->getLinks()['mapado_place_url']['href'] ?>" target="_blank">
-							<?php echo $activity->getFrontPlaceName() ?>
-						</a>
-					</p>
-				<?php endif; ?>
-	
-				<?php if ( $activity->getShortDescription() ) : ?>
-					<p class="mpd-card__description">
-						<?php echo $activity->getShortDescription() ?>
-						<a href="<?php echo MapadoUtils::getEventUrl( $activity->getUuid(), $vars['list_slug'] ) ?>"
-						   class="mpd-card__read-more-link"
-						>→ Lire la suite</a>
-					</p>
-				<?php endif; ?>
-			</div>
-		</div>
-	<?php endforeach; ?>
+<div id="mapado-plugin">
+	<?php
+		$modifier = $vars['card_thumb_design']['size'];
+		if ($vars['card_thumb_design']['position_side'] == 'top') {
+			$modifier = 'top';
+		}
+	?>
+	<div class="chew-row chew-row--<?= $vars['card_column_max'] ?> chew-row--thumb-<?= $modifier ?>">
+		<?php 
+		foreach ( $vars['events'] as $activity ) {
+			$vars['activity'] = $activity;
+			MapadoUtils::template( 'event_card', $vars );
+		}
+		$ghostSize = 5;
+		if ( $vars['card_column_max'] !== 'auto' ) {
+			$ghostSize = $vars['card_column_max'] - 1;
+		}
+		for ( $i = 0; $i < $ghostSize; $i++ ) : ?>
+			<li class="chew-cell chew-cell--ghost">
+			</li>
+		<?php endfor; ?>
+	</div>
 
 	<div class="mpd-card-list__footer">
 	
@@ -62,8 +39,38 @@
 					   class="mpd-pagination__item"
 					><</a>
 				<?php endif; ?>
-
-				<?php for ( $p = 1; $p <= $vars['pagination']['nb_pages']; $p++ ) : ?>
+				<?php $current_page = $vars['pagination']['page'] ?>
+				<?php $PAGINATION_BOUNDING = 3 ?>
+				<?php if (($current_page - $PAGINATION_BOUNDING) < 1) : ?>
+					<?php $begin_page = 1 ?>
+				<?php else : ?>
+					<?php $begin_page = $current_page - $PAGINATION_BOUNDING ?>
+					<?php if ($current_page  > $PAGINATION_BOUNDING + 1 ) : ?>
+						<!-- Begining of pagination always visible -->
+						<?php if ($current_page > $PAGINATION_BOUNDING * 2 + 1) : ?>
+							<?php $limit_pagination_begining = $PAGINATION_BOUNDING ?>	
+						<?php else : ?>	
+							<?php $limit_pagination_begining = $current_page - $PAGINATION_BOUNDING - 1 ?>	
+						<?php endif; ?>	
+						<?php for ( $p = 1; $p <= $limit_pagination_begining; $p++ ) : ?>
+							<?php if (($p != $limit_pagination_begining) ||  ($p < $PAGINATION_BOUNDING) ) : ?>
+								<a href="<?php echo MapadoUtils::getUserListUrl( $vars['list_slug'], $p ) ?>"
+								   class="mpd-pagination__item"
+								><?php echo $p; ?></a>
+							<?php else : ?>
+								<a href="<?php echo MapadoUtils::getUserListUrl( $vars['list_slug'], $limit_pagination_begining ) ?>"
+							   class="mpd-pagination__item"
+								><?php echo "..."; ?></a>
+							<?php endif; ?>
+						<?php endfor; ?>
+					<?php endif; ?>	
+				<?php endif; ?>
+				<?php if (($current_page + $PAGINATION_BOUNDING) > $vars['pagination']['nb_pages']) : ?>
+					<?php $end_page = $vars['pagination']['nb_pages'] ?>
+				<?php else : ?>
+					<?php $end_page = $current_page + $PAGINATION_BOUNDING ?>
+				<?php endif; ?>
+				<?php for ( $p = $begin_page; $p <= $end_page; $p++ ) : ?>
 					<?php if ( $p == $vars['pagination']['page'] ) : ?>
 						<span class="mpd-pagination__item mpd-pagination__item--current"><?php echo $p; ?></span>
 					<?php else : ?>
