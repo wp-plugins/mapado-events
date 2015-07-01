@@ -57,7 +57,7 @@
 	</form>
 
 
-	<!-- Settings activity single page -->
+	<!-- Additionnal settings -->
 	<form id="mapado_add_settings_form" action="" method="POST">
 	<table id="mapado_add_settings_table" class="mapado_table widefat">
 		<thead>
@@ -90,22 +90,26 @@
 				</td>
 				<td>
 					<select name="mapado_perpage" id="mapado_perpage">
-						<?php foreach ( $vars['perpage'] as $val ) : ?>
-							<option value="<?php echo $val ?>" <?php if ( !empty($vars['settings']['perpage']) && $vars['settings']['perpage'] == $val ) echo 'selected="selected"'; ?>><?php echo $val ?></option>
+						<?php foreach ( $vars['perpage']['options'] as $val ) : ?>
+							<option value="<?php echo $val ?>"
+								<?php if ( $vars['perpage']['value'] == $val ) echo 'selected="selected"'; ?>
+							>
+								<?php echo $val ?>
+							</option>
 						<?php endforeach; ?>
 					</select>
 				</td>
 			</tr>
 
-			<tr>
+			<tr class="alternate">
 				<td>
 					<label for="mapado_card_column_max">Nombre de colonnes maximum : </label>
 				</td>
 				<td>
 					<select name="mapado_card_column_max" id="mapado_card_column_max">
-						<?php foreach ( $vars['card_column_max'] as $key => $val ) : ?>
+						<?php foreach ( $vars['card_column_max']['options'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( !empty($vars['settings']['card_column_max']) && $vars['settings']['card_column_max'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ($vars['card_column_max']['value'] == $key ) echo 'selected="selected"'; ?>
 								>
 								<?php echo $val ?>
 							</option>
@@ -120,9 +124,9 @@
 				</td>
 				<td>
 					<select name="mapado_card_thumb_position" id="mapado_card_thumb_position">
-						<?php foreach ( $vars['card_thumb_position'] as $key => $val ) : ?>
+						<?php foreach ( $vars['card_thumb_position']['options'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( !empty($vars['settings']['card_thumb_position']) && $vars['settings']['card_thumb_position'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ( $vars['card_thumb_position']['value'] == $key ) echo 'selected="selected"'; ?>
 							>
 								<?php echo $val ?>
 							</option>
@@ -131,15 +135,15 @@
 				</td>
 			</tr>
 
-			<tr>
+			<tr class="alternate">
 				<td>
 					<label for="mapado_card_thumb_orientation">Orientation des images dans les listes : </label>
 				</td>
 				<td>
 					<select name="mapado_card_thumb_orientation" id="mapado_card_thumb_orientation">
-						<?php foreach ( $vars['card_thumb_orientation'] as $key => $val ) : ?>
+						<?php foreach ( $vars['card_thumb_orientation']['options'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( !empty($vars['settings']['card_thumb_orientation']) && $vars['settings']['card_thumb_orientation'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ( $vars['card_thumb_orientation']['value'] == $key ) echo 'selected="selected"'; ?>
 							>
 								<?php echo $val ?>
 							</option>
@@ -154,9 +158,9 @@
 				</td>
 				<td>
 					<select name="mapado_card_thumb_size" id="mapado_card_thumb_size">
-						<?php foreach ( $vars['card_thumb_size'] as $key => $val ) : ?>
+						<?php foreach ( $vars['card_thumb_size']['options'] as $key => $val ) : ?>
 							<option value="<?php echo $key ?>"
-								<?php if ( !empty($vars['settings']['card_thumb_size']) && $vars['settings']['card_thumb_size'] == $key ) echo 'selected="selected"'; ?>
+								<?php if ( $vars['card_thumb_size']['value'] == $key ) echo 'selected="selected"'; ?>
 								>
 								<?php echo $val ?>
 							</option>
@@ -164,6 +168,37 @@
 					</select>
 				</td>
 			</tr>
+
+			<!-- List sort setting -->
+			<tr class="alternate">
+				<td>
+					<label for="mapado_list_sort">Tri des listes : </label>
+				</td>
+				<td>
+					<select name="mapado_list_sort" id="mapado_list_sort">
+							<option value="pertinence"
+								<?php if ( empty($vars['settings']['list_sort']) || $vars['settings']['list_sort'] == 'pertinence' ) echo 'selected="selected"'; ?>
+							>
+								Pertinence
+							<option value="next_date"
+								<?php if ( !empty($vars['settings']['list_sort']) && $vars['settings']['list_sort'] == 'next_date' ) echo 'selected="selected"'; ?>
+							>
+								Date
+							</option>
+					</select>
+				</td>
+			</tr>
+
+			<!-- Display past events setting -->
+			<tr>
+				<td>
+					<label for="mapado_past_events">Afficher les événements passés</label>
+				</td>
+				<td>
+					<input name="mapado_past_events" id="mapado_past_events" type="checkbox" value="1" <?php if ( !empty($vars['settings']['past_events']) ) echo 'checked="checked"' ?>>
+				</td>
+			</tr>
+
 		</tbody>
 	</table>
 	</form>

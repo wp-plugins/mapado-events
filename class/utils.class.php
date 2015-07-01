@@ -44,8 +44,14 @@ Class MapadoUtils {
 		$url	= user_trailingslashit( get_permalink(get_page_by_path($list_slug)) );
 
 		/* Rewrite url */
-		if ( get_option('permalink_structure') != '' )
-			$url	= user_trailingslashit( $url ) . $event_uuid;
+		if ( get_option('permalink_structure') != '' ) {
+			/* Adding the last slash when permalink structure doesn't have it */
+			$last_slash = substr( $url, -1 );
+			if ( $last_slash != '/' )
+				$url	.= '/';
+
+			$url	.= $event_uuid;
+		}
 		/* Classic url */
 		else
 			$url	= add_query_arg( 'event', $event_uuid, $url );

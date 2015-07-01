@@ -5,9 +5,9 @@
  */
 Class MapadoPrivateAuth extends MapadoPlugin {
 	
-	private $auth, $token;
-
-
+	private $auth;
+	private $token;
+	private $param_list = array( 'perpage', 'card_thumb_position', 'card_thumb_orientation', 'card_thumb_size', 'card_column_max', 'list_sort', 'past_events' );
 
 	function __construct () {
 		$this->setAuth();
@@ -22,6 +22,9 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 		add_action( 'admin_enqueue_scripts', array(&$this, 'enqueueScriptsStyle') );
 
 		add_action( 'admin_init', array(&$this, 'pluginCheck') );
+
+		/* Plugin settings link */
+		add_filter( 'plugin_action_links_' . $this->plugin_basename, array(&$this, 'settingsPluginLink'), 10, 2 );
 	}
 
 
@@ -37,7 +40,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	 * Generate token from auth key
 	 */
 	private function setToken () {
-		$this->token	= new \Mapado\Sdk\Model\AccessToken();
+		$this->token = new \Mapado\Sdk\Model\AccessToken();
 		$this->token->setAccessToken( $this->auth );
 	}
 
@@ -70,7 +73,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 
 			/* Update last plugin version on this site */
 			$this->settings['mapado_version']	= $plugin_datas['Version'];
-			update_option( parent::SETTINGS_WP_INDEX, $this->settings );
+			$this->settings->update();
 		}
 	}
 
@@ -93,12 +96,6 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	 */
 	public function adminSettings () {
 		/* Values for items per page params */
-		$params_perpage = array( 3, 5, 10, 20, 30, 40 );
-		$params_card_thumb_position = array( 'left' => 'à gauche', 'right' => 'à droite', 'top' => 'en bandeau' );
-		$params_card_thumb_orientation = array( 'portrait' => 'portrait', 'landscape' => 'paysage', 'square' => 'carré' );
-		$params_card_thumb_size = array( 'l' => 'grand', 'm' => 'moyen', 's' => 'petit' );
-		$params_card_column_max = array( '4' => 'jusqu\'à 4', '3' => 'jusqu\'à 3', '2' => 'jusqu\'à 2', '1' => 'toujours 1' );
-
 		$notification = array();
 
 		/* API Settings submit */
@@ -111,12 +108,14 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			);
 
 			/* Check if API settings have been changed */
-			if ( empty($this->api) || (!empty($this->api) && ($this->api['id'] != $_POST['mapado_api_id'] || $this->api['secret'] != $_POST['mapado_api_secret'])) )
+			if ( empty($this->api) || (!empty($this->api) && ($this->api['id'] != $_POST['mapado_api_id'] || $this->api['secret'] != $_POST['mapado_api_secret'])) ) {
 				$api	= update_option( parent::API_WP_INDEX, $api_settings );
+			}
 
 			/* Check if auth key have been changed */
-			if ( !isset($this->auth) || (isset($this->auth) && $this->auth != $_POST['mapado_api_auth']) )
-				$auth	= update_option( parent::AUTH_WP_INDEX, $_POST['mapado_api_auth'] );
+			if ( !isset($this->auth) || (isset($this->auth) && $this->auth != $_POST['mapado_api_auth']) ) {
+				$auth = update_option( parent::AUTH_WP_INDEX, $_POST['mapado_api_auth'] );
+			}
 
 			/* Refresh access, auth & token */
 			$this->setAccess();
@@ -141,18 +140,17 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 
 		/* Additional settings page submit */
 		if ( !empty($_POST['mapado_add_settings_submit']) ) {
-			if ( isset($_POST['mapado_widget']) )
+			if ( isset($_POST['mapado_widget']) ) {
 				$this->settings['widget'] = true;
-			else
+			} else {
 				$this->settings['widget'] = false;
+			}
 
-			$this->settings['perpage'] = $_POST['mapado_perpage'];
-			$this->settings['card_thumb_position'] = $_POST['mapado_card_thumb_position'];
-			$this->settings['card_thumb_orientation'] = $_POST['mapado_card_thumb_orientation'];
-			$this->settings['card_thumb_size'] = $_POST['mapado_card_thumb_size'];
-			$this->settings['card_column_max'] = $_POST['mapado_card_column_max'];
+			foreach ( $this->param_list as $param ) {
+				$this->settings[$param] = $_POST['mapado_' . $param];
+			}
 
-			$settings = update_option( parent::SETTINGS_WP_INDEX, $this->settings );
+			$settings = $this->settings->update();
 
 			/* Something went wrong */
 			if ( !$settings ) {
@@ -169,25 +167,26 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 				);
 			}
 		}
-
-		MapadoUtils::template( 'admin/settings', array(
+		
+		$vars = array(
 			'notification'	=> $notification,
 			'api'			=> $this->api,
 			'auth'			=> $this->auth,
-			'settings'		=> $this->settings,
-			'perpage'		=> $params_perpage,
-			'card_thumb_position'	=> $params_card_thumb_position,
-			'card_thumb_orientation' => $params_card_thumb_orientation,
-			'card_thumb_size' => $params_card_thumb_size,
-			'card_column_max' => $params_card_column_max
-		));
+			'settings'		=> $this->settings
+		);
+
+		foreach ( $this->param_list as $param ) {
+			$vars[$param]	= $this->settings->getDefinition( $param );
+		}
+
+		MapadoUtils::template( 'admin/settings', $vars);
 	}
 
 	/**
 	 * AJAX
 	 * Get user lists
 	 */
-	function ajaxGetUserLists () {
+	public function ajaxGetUserLists () {
 		$userUuid		= $this->getUser( $this->token )->getUuid();
 		$user_lists 	= $this->getClient( $this->token )->userList->findByUserUuid( $userUuid );
 
@@ -203,7 +202,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	 * AJAX
 	 * Save a user list settings
 	 */
-	function ajaxUpdateListSettings () {
+	public function ajaxUpdateListSettings () {
 		global $wpdb;
 		
 		/* Add a list */
@@ -267,6 +266,18 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 		}
 
 		exit;
+	}
+
+	/**
+	 * Adding plugin settings link in extensions list
+	 * @param array of existing links
+	 * @param plugin basename
+	 * @return array of links updated
+	 */
+	public function settingsPluginLink ( $links, $file ) {
+		array_unshift( $links, '<a href="' . admin_url( 'options-general.php?page=mapado_settings' ) . '">Réglages</a>' );
+
+		return $links;
 	}
 
 }

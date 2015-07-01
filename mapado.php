@@ -3,7 +3,7 @@
  * Plugin Name: Mapado for Wordpress
  * Plugin URI: http://www.mapado.com/
  * Description: Official Mapado plugin for Wordpress. Display lists of events curated on Mapado into your Wordpress blog.
- * Version: 0.2.10
+ * Version: 0.2.11
  * Author: Mapado
  * Author URI:  http://www.mapado.com/
  * License: GPL2 license
@@ -17,6 +17,7 @@ require_once MAPADO_PLUGIN_PATH . 'vendor/autoload.php';
 /* Require classes */
 require_once MAPADO_PLUGIN_PATH . 'class/private.auth.php';
 require_once MAPADO_PLUGIN_PATH . 'class/public.auth.php';
+require_once MAPADO_PLUGIN_PATH . 'class/setting.class.php';
 require_once MAPADO_PLUGIN_PATH . 'class/utils.class.php';
 require_once MAPADO_PLUGIN_PATH . 'class/widget.class.php';
 
@@ -24,7 +25,8 @@ Class MapadoPlugin {
 	protected	$api,
 				$settings, 
 				$client, 
-				$imported_lists;
+				$imported_lists,
+				$plugin_basename;
 
 	/* Options names in settings array, stored in wp_options table */
 	const API_WP_INDEX			= 'mapado_api';
@@ -44,6 +46,8 @@ Class MapadoPlugin {
 	 * Utils function to get & set settings from WP DB
 	 */
 	function setDatas () {
+		$this->plugin_basename	= plugin_basename( __FILE__ );
+
 		$this->setAccess();
 		$this->setSettings();
 		$this->setUserImportedLists();
@@ -63,7 +67,7 @@ Class MapadoPlugin {
 	 * Get & set the additionnal settings from WP DB
 	 */
 	protected function setSettings () {
-		$this->settings	= get_option( self::SETTINGS_WP_INDEX );
+		$this->settings	= new MapadoSetting(self::SETTINGS_WP_INDEX);
 	}
 
 	/**
@@ -291,6 +295,5 @@ function mapado_plugin () {
 	else
 		$mapado	= new MapadoPublicAuth();
 }
-
 
 

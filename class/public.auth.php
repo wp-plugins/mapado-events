@@ -80,23 +80,35 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 			/* Pagination */
 			$page		= 1;
-			$perpage = 10;
+			$perpage	= 10;
 			if ( !empty($this->settings['perpage']) ) {
 				$perpage = $this->settings['perpage'];
 			}
 
+			/* Sort */
+			$sort	= '';
+			if ( !empty($this->settings['list_sort']) ) {
+				$sort = $this->settings['list_sort'];
+			}
+
+			/* Display past events */
+			$past_events	= 'soon';
+			if ( !empty($this->settings['past_events']) )
+				$past_events = 'all';
 
 			if ( !empty($wp_query->query_vars['paged']) ) {
 				$page	= $wp_query->query_vars['paged'];
 			}
 
 			$start		= ($page * $perpage) - $perpage;
-            $params		= array(
-                'image_sizes' => array('100x150', '150x225', '200x300', '150x100', '225x150', '300x200', '150x150', '225x225', '300x300', '500x120', '500x200', '500x280'),
-                'offset' => $start,
-                'limit' => $perpage,
-                'list' => $uuid,
-            );
+			$params		= array(
+				'image_sizes'	=> array('100x150', '150x225', '200x300', '150x100', '225x150', '300x200', '150x150', '225x225', '300x300', '500x120', '500x200', '500x280'),
+				'offset'		=> $start,
+				'limit'			=> $perpage,
+				'list'			=> $uuid,
+				'sort'			=> $sort,
+				'when'			=> $past_events
+			);
 			$results	= $client->activity->findBy( $params );
 
 			$pagination	= array(
@@ -107,7 +119,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 			/* Card design */
 			$card_thumb_design = $this->getCardThumbDesign();
-			$card_column_max = '4';
+			$card_column_max = '2';
 			if ( !empty($this->settings['card_column_max']) ) {
 				$card_column_max = $this->settings['card_column_max'];
 			}
@@ -139,7 +151,7 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	public function eventWpTitle ( $title, $sep ) {
 		global $post, $wp_query;
 
-		if ( is_page() && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($wp_query->query_vars['mapado_event']) ) {
+		if ( is_page() && !empty($this->imported_lists) && (false !== $uuid = array_search($post->post_name, $this->imported_lists)) && !empty($wp_query->query_vars['mapado_event']) ) {
 			$params					= array( 'image_sizes' => array('700x250') );
 			$this->current_event	= $this->getActivity( $wp_query->query_vars['mapado_event'], $this->token, $params );
 
@@ -215,20 +227,9 @@ Class MapadoPublicAuth extends MapadoPlugin {
 	 */
 	protected function getCardThumbDesign () {
 		$card_thumb_position_type = 'side';
-		$card_thumb_position_side = 'left';
-		if ( !empty($this->settings['card_thumb_position']) ) {
-			$card_thumb_position_side	= $this->settings['card_thumb_position'];
-		}
-
-		$card_thumb_orientation = 'portrait';
-		if ( !empty($this->settings['card_thumb_orientation']) ) {
-			$card_thumb_orientation = $this->settings['card_thumb_orientation'];
-		}
-		
-		$card_thumb_size	= 'l';
-		if ( !empty($this->settings['card_thumb_size']) ) {
-			$card_thumb_size	= $this->settings['card_thumb_size'];
-		}
+		$card_thumb_position_side = $this->settings->getValue('card_thumb_position');
+		$card_thumb_orientation = $this->settings->getValue('card_thumb_orientation');
+		$card_thumb_size = $this->settings->getValue('card_thumb_size');
 		
 		$card_thumb_ratio	= 2;
 		if ( $card_thumb_size == 'm' ) {

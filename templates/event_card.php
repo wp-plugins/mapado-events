@@ -1,5 +1,5 @@
 <div class="chew-cell">
-    <div class="mpd-card">
+    <div class="chew-card mpd-card">
         <?php if ( !empty($vars['activity']->getImageUrlList()[$vars['card_thumb_design']['dimensions']][0]) ) : ?>
             <img class="mpd-card__thumb
                         mpd-card__thumb--<?= $vars['card_thumb_design']['position_type'] ?>

@@ -7,23 +7,25 @@
 
 <!-- List -->
 <div id="mapado-plugin">
-	<div id="mapado-plugin" class="chew-row
-									chew-row--<?= $vars['card_column_max'] ?>
-									chew-row--thumb-<?= $vars['card_thumb_design']['position_type'] ?>
-									chew-row--thumb-<?= $vars['card_thumb_design']['position_side'] ?>
-									chew-row--thumb-<?= $vars['card_thumb_design']['size'] ?>">
+	<?php
+		$modifier = $vars['card_thumb_design']['size'];
+		if ($vars['card_thumb_design']['position_side'] == 'top') {
+			$modifier = 'top';
+		}
+	?>
+	<div class="chew-row chew-row--<?= $vars['card_column_max'] ?> chew-row--thumb-<?= $modifier ?>">
 		<?php 
 		foreach ( $vars['events'] as $activity ) {
 			$vars['activity'] = $activity;
-			MapadoUtils::template( 'event_card', $vars);
+			MapadoUtils::template( 'event_card', $vars );
 		}
 		$ghostSize = 5;
-		if ($vars['card_column_max'] !== 'auto') {
+		if ( $vars['card_column_max'] !== 'auto' ) {
 			$ghostSize = $vars['card_column_max'] - 1;
 		}
-		for ( $i = 0; $i < $ghostSize; $i++ ): ?>
-			<div class="chew-cell chew-cell--ghost">
-			</div>
+		for ( $i = 0; $i < $ghostSize; $i++ ) : ?>
+			<li class="chew-cell chew-cell--ghost">
+			</li>
 		<?php endfor; ?>
 	</div>
 
