@@ -119,10 +119,8 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 			/* Card design */
 			$card_thumb_design = $this->getCardThumbDesign();
-			$card_column_max = '2';
-			if ( !empty($this->settings['card_column_max']) ) {
-				$card_column_max = $this->settings['card_column_max'];
-			}
+			$card_column_max = $this->settings->getValue('card_column_max');
+			$card_template = new MapadoMicroTemplate($this->settings->getValue('card_template'));
 			
 			ob_start();
 			
@@ -132,7 +130,8 @@ Class MapadoPublicAuth extends MapadoPlugin {
 				'events'			=> $results,
 				'pagination'		=> $pagination,
 				'card_column_max'	=> $card_column_max,
-				'card_thumb_design'	=> $card_thumb_design
+				'card_thumb_design'	=> $card_thumb_design,
+				'card_template'     => $card_template
 			));
 
 			$html	 = ob_get_contents();
@@ -201,7 +200,8 @@ Class MapadoPublicAuth extends MapadoPlugin {
 
 			MapadoUtils::template( 'event_single', array(
 				'event'		=> $this->current_event,
-				'thumbs'	=> $thumbs
+				'thumbs'	=> $thumbs,
+				'display_map'	=> $this->settings->getValue('display_map')
 			));
 
 			$content	 = ob_get_contents();

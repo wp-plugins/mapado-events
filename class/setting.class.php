@@ -19,6 +19,41 @@ Class MapadoSetting extends ArrayObject {
     private $card_column_max_options = array( '4' => 'jusqu\'à 4', '3' => 'jusqu\'à 3', '2' => 'jusqu\'à 2', '1' => 'toujours 1' );
     private $card_column_max_default = '2';
 
+    private $card_template_default = 
+'[%title]
+    <h3 class="mpd-card__title">
+        <a href="[[url]]">
+            [[title]]
+        </a>
+    </h3>
+[title%]
+
+[%date]
+    <p class="mpd-card__date">
+        [[date]]
+    </p>
+[date%]
+
+[%place]
+    <p class="mpd-card__address">
+        <a href="[[placeUrl]]" target="_blank">
+            [[place]]
+        </a>
+        [%city]
+            <span class="mpd-card__city">
+                - [[city]]
+            </span>
+        [city%]
+    </p>
+[place%]
+
+[%description]
+    <p class="mpd-card__description">
+        [[description]]
+        <a href="[[url]]" class="mpd-card__read-more-link">→ Lire la suite</a>
+    </p>
+[description%]';
+
 
     /**
      * Initialization

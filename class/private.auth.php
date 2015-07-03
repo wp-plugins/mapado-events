@@ -7,7 +7,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 	
 	private $auth;
 	private $token;
-	private $param_list = array( 'perpage', 'card_thumb_position', 'card_thumb_orientation', 'card_thumb_size', 'card_column_max', 'list_sort', 'past_events' );
+	private $param_list = array( 'perpage', 'card_thumb_position', 'card_thumb_orientation', 'card_thumb_size', 'card_column_max', 'list_sort', 'past_events', 'display_map', 'card_template', );
 
 	function __construct () {
 		$this->setAuth();
@@ -147,7 +147,7 @@ Class MapadoPrivateAuth extends MapadoPlugin {
 			}
 
 			foreach ( $this->param_list as $param ) {
-				$this->settings[$param] = $_POST['mapado_' . $param];
+				$this->settings[$param] = stripslashes($_POST['mapado_' . $param]);
 			}
 
 			$settings = $this->settings->update();
