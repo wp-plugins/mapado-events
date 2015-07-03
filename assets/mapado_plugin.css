@@ -95,6 +95,21 @@
 
 
 /**
+ * Google Maps
+ */
+#mapado-plugin .mpd-google-maps {
+	padding: 0 0px;
+	margin: 10px 0;
+	text-align: center;
+}
+
+#mapado-map-canvas {
+  min-width: 300px;
+  width: 100%;
+  height: 300px;
+}
+
+/**
  * Single activity
  */
 .mapado_activity_single {

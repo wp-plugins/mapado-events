@@ -7,12 +7,18 @@
 }
 
 .mapado_table {
-	width: 800px;
+	width: 900px;
 	margin: 30px 0;
 }
 
 .mapado_table label {
 	font-weight: bold;
+}
+
+.mapado_table textarea {
+	height: 10em;
+	width: 100%;
+	resize: vertical;
 }
 
 .mapado_table td {

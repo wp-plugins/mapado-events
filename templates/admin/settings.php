@@ -169,6 +169,17 @@
 				</td>
 			</tr>
 
+			<tr>
+				<td>
+					<label for="mapado_card_template">Modèle d'affichage dans les listes : </label>
+				</td>
+				<td>
+					<textarea name="mapado_card_template" id="mapado_card_template"><?php
+						echo $vars['settings']->getValue('card_template')
+					?></textarea>
+				</td>
+			</tr>
+
 			<!-- List sort setting -->
 			<tr class="alternate">
 				<td>
@@ -180,8 +191,8 @@
 								<?php if ( empty($vars['settings']['list_sort']) || $vars['settings']['list_sort'] == 'pertinence' ) echo 'selected="selected"'; ?>
 							>
 								Pertinence
-							<option value="next_date"
-								<?php if ( !empty($vars['settings']['list_sort']) && $vars['settings']['list_sort'] == 'next_date' ) echo 'selected="selected"'; ?>
+							<option value="future_date"
+								<?php if ( !empty($vars['settings']['list_sort']) && $vars['settings']['list_sort'] == 'future_date' ) echo 'selected="selected"'; ?>
 							>
 								Date
 							</option>
@@ -198,6 +209,16 @@
 					<input name="mapado_past_events" id="mapado_past_events" type="checkbox" value="1" <?php if ( !empty($vars['settings']['past_events']) ) echo 'checked="checked"' ?>>
 				</td>
 			</tr>
+			<!-- Google Maps Display -->
+			<tr class="alternate">
+				<td>
+					<label for="mapado_display_map">Afficher une carte sous les événements ?</label>
+				</td>
+				<td>
+					<input name="mapado_display_map" id="mapado_display_map" type="checkbox" value="1" <?php if ( !empty($vars['settings']['display_map']) ) echo 'checked="checked"' ?>>
+				</td>
+			</tr>
+
 
 		</tbody>
 	</table>
