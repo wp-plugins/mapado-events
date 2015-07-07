@@ -16,6 +16,7 @@
 
 #mapado-plugin p {
 	margin: 10px 0 0;
+	padding: 0;
 }
 
 
@@ -33,6 +34,7 @@
  */
 #mapado-plugin .mpd-card__title {
 	margin: 0;
+	padding: 0;
 }
 
 #mapado-plugin .mpd-card__title > a {
@@ -98,7 +100,7 @@
  * Google Maps
  */
 #mapado-plugin .mpd-google-maps {
-	padding: 0 0px;
+	padding: 0;
 	margin: 10px 0;
 	text-align: center;
 }
