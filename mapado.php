@@ -3,7 +3,7 @@
  * Plugin Name: Mapado for Wordpress
  * Plugin URI: http://www.mapado.com/
  * Description: Official Mapado plugin for Wordpress. Display lists of events curated on Mapado into your Wordpress blog.
- * Version: 0.2.17
+ * Version: 0.2.18
  * Author: Mapado
  * Author URI:  http://www.mapado.com/
  * License: GPL2 license

@@ -19,8 +19,8 @@
                         <?php if ($vars['card_column_max']['value'] == $key) echo 'checked="checked"'; ?>
                         >
                     <span>
-                        <img src="<?php echo plugins_url('mapado-plugin/assets/images/'.$key.'-column.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
-                        <img src="<?php echo plugins_url('mapado-plugin/assets/images/'.$key.'-column-active.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
+                        <img src="<?php echo plugins_url('mapado-events/assets/images/'.$key.'-column.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
+                        <img src="<?php echo plugins_url('mapado-events/assets/images/'.$key.'-column-active.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
                     </span>
                 </label>
             <?php endforeach; ?>
@@ -56,8 +56,8 @@
                         <?php if ($vars['card_thumb_position']['value'] == $key) echo 'checked="checked"'; ?>
                         >
                     <span>
-                        <img src="<?php echo plugins_url('mapado-plugin/assets/images/img-'.$key.'.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
-                        <img src="<?php echo plugins_url('mapado-plugin/assets/images/img-'.$key.'-active.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
+                        <img src="<?php echo plugins_url('mapado-events/assets/images/img-'.$key.'.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
+                        <img src="<?php echo plugins_url('mapado-events/assets/images/img-'.$key.'-active.png'); ?>" alt="<?php echo $val ?>" title="<?php echo $val ?>" />
                     </span>
                 </label>
             <?php endforeach; ?>
