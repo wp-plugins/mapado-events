@@ -1,283 +1,352 @@
 <?php
+
 /**
  * Class MapadoPrivateAuth
  * For admin area
  */
-Class MapadoPrivateAuth extends MapadoPlugin {
-	
-	private $auth;
-	private $token;
-	private $param_list = array( 'perpage', 'card_thumb_position', 'card_thumb_orientation', 'card_thumb_size', 'card_column_max', 'list_sort', 'past_events', 'display_map', 'card_template', );
+Class MapadoPrivateAuth extends MapadoPlugin
+{
 
-	function __construct () {
-		$this->setAuth();
-		$this->setToken();
-		$this->setDatas();
+    private $auth;
+    private $token;
+    private $param_list = array('widget', 'perpage', 'card_thumb_position', 'card_thumb_orientation', 'card_thumb_size', 'card_column_max', 'list_sort', 'past_events', 'display_map', 'card_template', 'full_template');
 
-		add_action( 'admin_menu', array(&$this, 'adminMenu') );
+    function __construct()
+    {
+        $this->setAuth();
+        $this->setToken();
+        $this->setDatas();
 
-		add_action( 'wp_ajax_ajaxGetUserLists', array(&$this, 'ajaxGetUserLists') );
-		add_action( 'wp_ajax_ajaxUpdateListSettings', array(&$this, 'ajaxUpdateListSettings') );
+        add_action('admin_menu', array($this, 'adminMenu'));
 
-		add_action( 'admin_enqueue_scripts', array(&$this, 'enqueueScriptsStyle') );
+        add_action('wp_ajax_ajaxGetUserLists', array($this, 'ajaxGetUserLists'));
+        add_action('wp_ajax_ajaxUpdateListSettings', array($this, 'ajaxUpdateListSettings'));
 
-		add_action( 'admin_init', array(&$this, 'pluginCheck') );
+        add_action('admin_enqueue_scripts', array($this, 'enqueueScriptsStyle'));
 
-		/* Plugin settings link */
-		add_filter( 'plugin_action_links_' . $this->plugin_basename, array(&$this, 'settingsPluginLink'), 10, 2 );
-	}
+        add_action('admin_init', array($this, 'pluginCheck'));
+        add_action('mapado_settings_api', array($this, 'adminSettingsApi'));
 
-
-
-	/**
-	 * Get the private auth key from WP settings
-	 */
-	private function setAuth () {
-		$this->auth	= get_option( parent::AUTH_WP_INDEX );
-	}
-
-	/**
-	 * Generate token from auth key
-	 */
-	private function setToken () {
-		$this->token = new \Mapado\Sdk\Model\AccessToken();
-		$this->token->setAccessToken( $this->auth );
-	}
+        /* Plugin settings link */
+        add_filter('plugin_action_links_' . $this->plugin_basename, array($this, 'settingsPluginLink'), 10, 2);
+    }
 
 
+    /**
+     * Get the private auth key from WP settings
+     */
+    private function setAuth()
+    {
+        $this->auth = get_option(parent::AUTH_WP_INDEX);
+    }
 
-	/**
-	 * Enqueue JS & CSS files in mapado admin settings page
-	 */
-	public function enqueueScriptsStyle ( $hook ) {
-		/* If not mapado settings page */
-		if ( $hook != 'settings_page_mapado_settings' )
-			return;
+    /**
+     * Generate token from auth key
+     */
+    private function setToken()
+    {
+        $this->token = new \Mapado\Sdk\Model\AccessToken();
+        $this->token->setAccessToken($this->auth);
+    }
 
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'mapado_admin_script', MAPADO_PLUGIN_URL . 'assets/admin.js', '0.1.6' );
 
-		wp_register_style( 'mapado_admin_css', MAPADO_PLUGIN_URL . 'assets/admin.css', false, '0.1.6' );
-		wp_enqueue_style( 'mapado_admin_css' );
-	}
+    /**
+     * Enqueue JS & CSS files in mapado admin settings page
+     */
+    public function enqueueScriptsStyle($hook)
+    {
+        /* If not mapado settings page */
+        if ($hook != 'settings_page_mapado_settings')
+            return;
 
-	/**
-	 * Check plugin version
-	 */
-	public function pluginCheck () {
-		$plugin_datas	= get_plugin_data( plugin_dir_path( dirname( __FILE__ ))  . 'mapado.php' );
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('mapado_admin_script', MAPADO_PLUGIN_URL . 'assets/admin.js', '0.1.6');
 
-		/* Force flush rewrite if the plugin has been updated */
-		if ( isset($this->settings['mapado_version']) && $plugin_datas['Version'] != $this->settings['mapado_version'] ) {
-			$this->flushRules( true );
+        wp_register_style('mapado_admin_css', MAPADO_PLUGIN_URL . 'assets/admin.css', false, '0.1.6');
+        wp_enqueue_style('mapado_admin_css');
+    }
 
-			/* Update last plugin version on this site */
-			$this->settings['mapado_version']	= $plugin_datas['Version'];
-			$this->settings->update();
-		}
-	}
+    /**
+     * Check plugin version
+     */
+    public function pluginCheck()
+    {
+        $plugin_datas = get_plugin_data(plugin_dir_path(dirname(__FILE__)) . 'mapado.php');
 
-	/**
-	 * Adding mapado in admin settings menu
-	 */
-	public function adminMenu () {
-		add_submenu_page(
-			'options-general.php', 
-			'Mapado plugin', 
-			'Paramètres mapado', 
-			'manage_options', 
-			'mapado_settings', 
-			array( &$this, 'adminSettings' )
-		);
-	}
+        /* Force flush rewrite if the plugin has been updated */
+        if (isset($this->settings['mapado_version']) && $plugin_datas['Version'] != $this->settings['mapado_version']) {
+            $this->flushRules(true);
 
-	/**
-	 * Admin settings page
-	 */
-	public function adminSettings () {
-		/* Values for items per page params */
-		$notification = array();
+            /* Update last plugin version on this site */
+            $this->settings['mapado_version'] = $plugin_datas['Version'];
+            $this->settings->update();
+        }
+    }
 
-		/* API Settings submit */
-		if ( !empty($_POST['mapado_settings_submit']) ) {
-			$api = $auth = true;
+    /**
+     * Adding mapado in admin settings menu
+     */
+    public function adminMenu()
+    {
+        add_submenu_page(
+            'options-general.php',
+            'Mapado plugin',
+            'Paramètres mapado',
+            'manage_options',
+            'mapado_settings',
+            array($this, 'adminSettings')
+        );
+    }
 
-			$api_settings	= array(
-				'id'		=> $_POST['mapado_api_id'],
-				'secret'	=> $_POST['mapado_api_secret']
-			);
+    /**
+     * Admin settings page
+     */
+    public function adminSettings()
+    {
+        $hasApi = !empty($this->api['id']) && !empty($this->api['secret']) && !empty($this->auth);
 
-			/* Check if API settings have been changed */
-			if ( empty($this->api) || (!empty($this->api) && ($this->api['id'] != $_POST['mapado_api_id'] || $this->api['secret'] != $_POST['mapado_api_secret'])) ) {
-				$api	= update_option( parent::API_WP_INDEX, $api_settings );
-			}
+        // Asked step
+        $stepList = ['api', 'imports', 'options'];
+        $step = 'options';
+        if (isset($_GET['step']) && in_array($_GET['step'], $stepList) !== false) {
+            $step = $_GET['step'];
+        }
 
-			/* Check if auth key have been changed */
-			if ( !isset($this->auth) || (isset($this->auth) && $this->auth != $_POST['mapado_api_auth']) ) {
-				$auth = update_option( parent::AUTH_WP_INDEX, $_POST['mapado_api_auth'] );
-			}
+        // Step redirect
+        if ($step == 'api') {
+            return $this->adminSettingsApi();
+        }
+        if (!$hasApi) {
+            MapadoNotification::error('Vous n\'avez pas renseigné vous réglages API');
+            return $this->adminSettingsApi();
+        }
+        if ($step == 'imports') {
+            return $this->adminSettingsImports();
+        }
+        if (!$this->imported_lists) {
+            MapadoNotification::error('Vous n\'avez pas encore importé de liste');
+            return $this->adminSettingsImports();
+        }
+        return $this->adminSettingsOptions();
+    }
 
-			/* Refresh access, auth & token */
-			$this->setAccess();
-			$this->setAuth();
-			$this->setToken();
-			
-			/* Something went wrong */
-			if ( !$api || !$auth ) {
-				$notification = array(
-					'state'	=> 'error',
-					'text'	=> 'Il y a eu un problème'
-				);
-			}
-			/* Success */
-			else {
-				$notification = array(
-					'state'	=> 'updated',
-					'text'	=> 'Réglages enregistrés'
-				);
-			}
-		}
+    public function adminSettingsApi()
+    {
 
-		/* Additional settings page submit */
-		if ( !empty($_POST['mapado_add_settings_submit']) ) {
-			if ( isset($_POST['mapado_widget']) ) {
-				$this->settings['widget'] = true;
-			} else {
-				$this->settings['widget'] = false;
-			}
+        /* API Settings submit */
+        if (!empty($_POST['mapado_settings_submit'])) {
+            $api = $auth = true;
 
-			foreach ( $this->param_list as $param ) {
-				$this->settings[$param] = stripslashes($_POST['mapado_' . $param]);
-			}
+            $api_settings = array(
+                'id' => $_POST['mapado_api_id'],
+                'secret' => $_POST['mapado_api_secret']
+            );
 
-			$settings = $this->settings->update();
+            /* Check if API settings have been changed */
+            if (empty($this->api) || (!empty($this->api) && ($this->api['id'] != $_POST['mapado_api_id'] || $this->api['secret'] != $_POST['mapado_api_secret']))) {
+                $api = update_option(parent::API_WP_INDEX, $api_settings);
+            }
 
-			/* Something went wrong */
-			if ( !$settings ) {
-				$notification	= array(
-					'state'	=> 'error',
-					'text'	=> 'Il y a eu un problème'
-				);
-			}
-			/* Success */
-			else {
-				$notification	= array(
-					'state'	=> 'updated',
-					'text'	=> 'Paramètres supplémentaires enregistrés'
-				);
-			}
-		}
-		
-		$vars = array(
-			'notification'	=> $notification,
-			'api'			=> $this->api,
-			'auth'			=> $this->auth,
-			'settings'		=> $this->settings
-		);
+            /* Check if auth key have been changed */
+            if (!isset($this->auth) || (isset($this->auth) && $this->auth != $_POST['mapado_api_auth'])) {
+                $auth = update_option(parent::AUTH_WP_INDEX, $_POST['mapado_api_auth']);
+            }
 
-		foreach ( $this->param_list as $param ) {
-			$vars[$param]	= $this->settings->getDefinition( $param );
-		}
+            /* Refresh access, auth & token */
+            $this->setAccess();
+            $this->setAuth();
+            $this->setToken();
 
-		MapadoUtils::template( 'admin/settings', $vars);
-	}
+            /* Something went wrong */
+            if (!$api || !$auth) {
+                MapadoNotification::error('Il y a eu un problème');
 
-	/**
-	 * AJAX
-	 * Get user lists
-	 */
-	public function ajaxGetUserLists () {
-		$userUuid		= $this->getUser( $this->token )->getUuid();
-		$user_lists 	= $this->getClient( $this->token )->userList->findByUserUuid( $userUuid );
+                /* Success */
+            } else {
+                MapadoNotification::success('Réglages enregistrés');
+                if ($this->api['id'] && $this->api['secret'] && $this->auth) {
+                    return $this->adminSettingRedirect('imports');
+                }
+            }
+        }
 
-		MapadoUtils::template( 'admin/user_lists', array(
-			'user_lists'		=> $user_lists,
-			'imported_lists'	=> $this->imported_lists
-		));
+        return $this->renderAdminSetting('api');
+    }
 
-		exit;
-	}
+    public function adminSettingsImports()
+    {
+        if (!empty($_POST['mapado_settings_submit'])) {
+            return $this->adminSettingRedirect('options');
+        }
+        return $this->renderAdminSetting('imports');
+    }
 
-	/**
-	 * AJAX
-	 * Save a user list settings
-	 */
-	public function ajaxUpdateListSettings () {
-		global $wpdb;
-		
-		/* Add a list */
-		if ( $_POST['mapado_action'] == 'import' ) {
-			if ( empty($this->imported_lists) )
-				$this->imported_lists	= array();
+    public function adminSettingsOptions()
+    {
 
-			/* Slugify list slug */
-			$slug	= sanitize_title( $_POST['slug'] );
+        /* Additional settings page submit */
+        if (!empty($_POST['mapado_settings_submit'])) {
+            $upToDate = true;
 
-			/* Check if slug already exist */
-			if ( $wpdb->get_row("SELECT post_name FROM " . $wpdb->prefix . "posts WHERE post_name = '" . $slug . "'", 'ARRAY_A') ) {
-				echo json_encode(array(
-					'state' => 'error',
-					'msg'	=> "L'identifiant est déjà utilisé"
-				));
+            foreach ($this->param_list as $param) {
+                $newValue = stripslashes($_POST['mapado_' . $param]);
+                if ($this->settings[$param] != $newValue) {
+                    $this->settings[$param] = stripslashes($_POST['mapado_' . $param]);
+                    $upToDate = false;
+                }
+            }
+            if (!$upToDate) {
+                $upToDate = $this->settings->update();
+            }
 
-				exit;
-			}
+            /* Something went wrong */
+            if (!$upToDate) {
+                MapadoNotification::error('Il y a eu un problème');
 
-			$page	= wp_insert_post(array(
-				'post_title'		=> $_POST['title'],
-				'post_name'			=> $slug,
-				'post_content'		=> '[mapado_list]',
-				'post_status'		=> 'publish',
-				'post_type'     	=> 'page',
-				'post_author'		=> 1,
-				'comment_status'	=> 'closed'
-			), false );
+                /* Success */
+            } else {
+                MapadoNotification::success('Paramètres enregistrés');
+            }
+        }
 
-			if ( empty($page) ) {
-				echo json_encode(array(
-					'state' => 'error',
-					'msg'	=> 'Problème lors de la création'
-				));
-			}
-			else
-				$this->imported_lists[$_POST['uuid']]	= $slug;
-		}
-		/* Delete a list & the associate page */
-		else if ( $_POST['mapado_action'] == 'delete' ) {
-			$page	= get_page_by_path( $_POST['slug'] );
-			wp_delete_post( $page->ID, true );
+        $vars = array();
+        foreach ($this->param_list as $param) {
+            $vars[$param] = $this->settings->getDefinition($param);
+        }
 
-			unset( $this->imported_lists[$_POST['uuid']] );
-		}
+        return $this->renderAdminSetting('options', $vars);
+    }
 
-		/* Something went wrong */
-		if ( !update_option('mapado_user_lists', $this->imported_lists) ) {
-			echo json_encode(array(
-				'state' => 'error',
-				'msg'	=> 'Erreur lors de la mise à jour'
-			));
-		}
-		/* Success */
-		else {
-			echo json_encode(array(
-				'state' => 'updated',
-				'msg'	=> 'Listes mises à jour'
-			));
-		}
+    protected function renderAdminSetting($step, $extraVars = array())
+    {
+        if (isset($_GET['noheader'])) {
+            require_once(ABSPATH . 'wp-admin/admin-header.php');
+        }
+        $hasApi = !empty($this->api['id']) && !empty($this->api['secret']) && !empty($this->auth);
+        $hasImportedLists = $hasApi && $this->imported_lists;
+        $vars = array(
+            'step' => $step,
+            'notification_list' => MapadoNotification::pull(),
+            'settings' => $this->settings,
+            'api' => $this->api,
+            'auth' => $this->auth,
+            'has_api' => $hasApi,
+            'has_imported_lists' => $hasImportedLists
+        );
+        $vars = array_merge($extraVars, $vars);
 
-		exit;
-	}
+        MapadoUtils::template('admin/settings', $vars);
+        return true;
+    }
 
-	/**
-	 * Adding plugin settings link in extensions list
-	 * @param array of existing links
-	 * @param plugin basename
-	 * @return array of links updated
-	 */
-	public function settingsPluginLink ( $links, $file ) {
-		array_unshift( $links, '<a href="' . admin_url( 'options-general.php?page=mapado_settings' ) . '">Réglages</a>' );
+    protected function adminSettingRedirect($step)
+    {
+        wp_redirect(admin_url('options-general.php?page=mapado_settings&step=' . $step));
+        return true;
+    }
 
-		return $links;
-	}
+    /**
+     * AJAX
+     * Get user lists
+     */
+    public function ajaxGetUserLists()
+    {
+        $userUuid = $this->getUser($this->token)->getUuid();
+        $user_lists = $this->getClient($this->token)->userList->findByUserUuid($userUuid);
+
+        MapadoUtils::template('admin/user_lists', array(
+            'user_lists' => $user_lists,
+            'imported_lists' => $this->imported_lists
+        ));
+
+        exit;
+    }
+
+    /**
+     * AJAX
+     * Save a user list settings
+     */
+    public function ajaxUpdateListSettings()
+    {
+        global $wpdb;
+
+        if (empty($this->imported_lists)) {
+            $this->imported_lists = array();
+        }
+
+        /* Add a list */
+        if ($_POST['mapado_action'] == 'import') {
+
+            /* Slugify list slug */
+            $slug = sanitize_title($_POST['slug']);
+
+            /* Check if slug already exist */
+            if ($wpdb->get_row("SELECT post_name FROM " . $wpdb->prefix . "posts WHERE post_name = '" . $slug . "'", 'ARRAY_A')) {
+                echo json_encode(array(
+                    'state' => 'error',
+                    'msg' => "L'identifiant est déjà utilisé"
+                ));
+
+                exit;
+            }
+
+            $page = wp_insert_post(array(
+                'post_title' => $_POST['title'],
+                'post_name' => $slug,
+                'post_content' => '[mapado_list]',
+                'post_status' => 'publish',
+                'post_type' => 'page',
+                'post_author' => 1,
+                'comment_status' => 'closed'
+            ), false);
+
+            if (empty($page)) {
+                echo json_encode(array(
+                    'state' => 'error',
+                    'msg' => 'Problème lors de la création'
+                ));
+            } else {
+                $this->imported_lists[$_POST['uuid']] = $slug;
+            }
+
+            /* Delete a list & the associate page */
+        } else if ($_POST['mapado_action'] == 'delete') {
+            $page = get_page_by_path($_POST['slug']);
+            wp_delete_post($page->ID, true);
+
+            unset($this->imported_lists[$_POST['uuid']]);
+        }
+
+        /* Something went wrong */
+        if (!update_option('mapado_user_lists', $this->imported_lists)) {
+            echo json_encode(array(
+                'state' => 'error',
+                'msg' => 'Erreur lors de la mise à jour'
+            ));
+
+            /* Success */
+        } else {
+            echo json_encode(array(
+                'state' => 'updated',
+                'msg' => 'Listes mises à jour',
+                'count' => count($this->imported_lists)
+            ));
+        }
+
+        exit;
+    }
+
+    /**
+     * Adding plugin settings link in extensions list
+     * @param array of existing links
+     * @param plugin basename
+     * @return array of links updated
+     */
+    public function settingsPluginLink($links, $file)
+    {
+        array_unshift($links, '<a href="' . admin_url('options-general.php?page=mapado_settings') . '">Réglages</a>');
+
+        return $links;
+    }
 
 }
