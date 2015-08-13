@@ -3,7 +3,7 @@ Contributors: hultra
 Tags: calendar, event, event calendar, event management, events, events calendar, concert, meeting
 Requires at least: 4.0
 Tested up to: 4.1
-Stable tag: 0.2.16
+Stable tag: 0.2.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ This section describes how to install the plugin and get it working.
 Create a Mapado account and get it on your [profile/my applications page](http://www.mapado.com/my/applications/)
 
 == Changelog ==
+
+= 0.2.17 =
+New welcome screens : more user friendly
+New templating system for full customization
 
 = 0.2.14 =
 Add map option to single event page
