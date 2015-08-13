@@ -3,11 +3,12 @@
  * Plugin Name: Mapado for Wordpress
  * Plugin URI: http://www.mapado.com/
  * Description: Official Mapado plugin for Wordpress. Display lists of events curated on Mapado into your Wordpress blog.
- * Version: 0.2.16
+ * Version: 0.2.17
  * Author: Mapado
  * Author URI:  http://www.mapado.com/
  * License: GPL2 license
  */
+session_start();
 
 define( 'MAPADO_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MAPADO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -16,6 +17,7 @@ require_once MAPADO_PLUGIN_PATH . 'vendor/autoload.php';
 
 /* Require classes */
 require_once MAPADO_PLUGIN_PATH . 'class/microtemplate.class.php';
+require_once MAPADO_PLUGIN_PATH . 'class/notification.class.php';
 require_once MAPADO_PLUGIN_PATH . 'class/private.auth.php';
 require_once MAPADO_PLUGIN_PATH . 'class/public.auth.php';
 require_once MAPADO_PLUGIN_PATH . 'class/setting.class.php';
@@ -165,12 +167,17 @@ Class MapadoPlugin {
 	 * @return boolean
 	 */
 	static function widgetActive () {
-		$settings	= get_option( self::SETTINGS_WP_INDEX );
+		$settings = new MapadoSetting(self::SETTINGS_WP_INDEX);
+		return $settings->getValue('widget');
+	}
 
-		if ( !empty($settings['widget']) )
-			return true;
-
-		return false;
+	/**
+	 * Check map activation
+	 * @return boolean
+	 */
+	static function mapActive () {
+		$settings = new MapadoSetting(self::SETTINGS_WP_INDEX);
+		return $settings->getValue('display_map');
 	}
 
 	/**
@@ -296,5 +303,4 @@ function mapado_plugin () {
 	else
 		$mapado	= new MapadoPublicAuth();
 }
-
 
